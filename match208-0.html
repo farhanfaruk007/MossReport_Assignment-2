@@ -1,0 +1,120 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/10/22101417_CSE422_Section10_LabAssignment2_-_NILOY_KUMAR_SAHA.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/10/22101417_CSE422_Section10_LabAssignment2_-_NILOY_KUMAR_SAHA.py<p></p><pre>
+import random
+
+def create_chromosome(n, t):
+    return ''.join(random.choice('01') for _ in range(n * t))
+
+def evaluate_schedule_fitness(routine, n, t):
+    overlapping_courses_penalty = 0
+    consistency_penalty = 0
+
+    for timeslot in range(t):
+        timeslot_course_count = 0
+        for i in range(n):
+            idx = timeslot * n + i
+            timeslot_course_count += int(routine[idx])
+        if timeslot_course_count &gt; 1:
+            overlapping_courses_penalty += (timeslot_course_count - 1)
+
+    for course in range(n):
+        course_in_same_slot = 0
+        for t_slot in range(t):
+            indx = t_slot * n + course
+            course_in_same_slot += int(routine[indx])
+        if course_in_same_slot &gt; 1:
+            consistency_penalty += (course_in_same_slot - 1)
+        elif course_in_same_slot == 0:
+            consistency_penalty += 1
+
+    return -(overlapping_courses_penalty + consistency_penalty)
+
+
+def choose_parents(population_schedules, fitness_scores):
+    total_fitness = sum(fitness_scores)
+    selection_probabilities = [fitness / total_fitness for fitness in fitness_scores]
+    parents = random.choices(population_schedules, weights=selection_probabilities, k=2)
+    return parents
+
+
+def run_crossover(parentOne, parentTwo):
+    crossover_index = random.randint(1, len(parentOne) - 1)
+    child1 = parentOne[:crossover_index] + parentTwo[crossover_index:]
+    child2 = parentTwo[:crossover_index] + parentOne[crossover_index:]
+    return child1, child2
+
+<a name="0"></a><font color="#FF0000"><a href="match208-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_11.gif"/></a>
+
+def run_mutate(chromosome, mutationRate):
+    mutatedChromosome = ''
+    for part in chromosome:
+        if random.random() &lt; mutationRate:
+            mutatedChromosome += '1' if part == '0' else '0'
+        else:
+            mutatedChromosome += part
+    return mutatedChromosome
+
+def run_genetic_algorithm(n, t, population_len, max_iterations, mutationRate):
+    population_value = [create_chromosome(n, t) for _ in range(population_len)]
+
+    for _ in range(max_iterations):
+        fitness_scores = [evaluate_schedule_fitness(chromosome, n, t) for chromosome in population_value]
+</font>        max_fitness = max(fitness_scores)
+        if max_fitness == 0:
+            break
+
+        new_population_schedules = []
+        for _ in range(population_len // 2):
+            parents = choose_parents(population_value, fitness_scores)
+            child1, child2 = run_crossover(parents[0], parents[1])
+<a name="1"></a><font color="#00FF00"><a href="match208-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_9.gif"/></a>
+
+            mutated_child1 = run_mutate(child1, mutationRate)
+            mutated_child2 = run_mutate(child2, mutationRate)
+            new_population_schedules.extend([mutated_child1, mutated_child2])
+
+        population_value = new_population_schedules
+
+    best_chromosome = max(population_value, key=lambda x: evaluate_schedule_fitness(x, n, t))
+    return best_chromosome, evaluate_schedule_fitness(best_chromosome, n, t)
+
+n, t = map(int, input("Enter number of courses and timeslots: ").split())
+courses = [input("Enter course details: ") for _ in range(n)]
+</font><a name="2"></a><font color="#0000FF"><a href="match208-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_4.gif"/></a>
+
+
+best_chromosome, fitness_value = run_genetic_algorithm(n, t, 100, 100, 0.01)
+
+print("Best Chromosome from Genetic Algorithm:", best_chromosome)
+print("Best Fitness from Genetic Algorithm:", fitness_value)
+
+# PART 2
+def two_point_crossover(parent1, parent2):
+</font>    length = len(parent1)
+    point1 = random.randint(0, length - 2)
+    point2 = random.randint(point1 + 1, length - 1)
+
+    child1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    child2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+
+    print(f"Parent 1: {parent1}")
+    print(f"Parent 2: {parent2}")
+    print(f"Child 1: {child1}")
+    print(f"Child 2: {child2}")
+
+    return child1, child2
+
+n, t = 3, 3 
+population_size = 5
+population = [create_chromosome(n, t) for _ in range(population_size)]
+
+parent1, parent2 = random.sample(population, 2)
+two_point_crossover(parent1, parent2)
+</pre>
+</body>
+</html>

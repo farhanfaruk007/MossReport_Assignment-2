@@ -1,0 +1,188 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/3/22299422_Mahir_Tajwar_Rahman_CSE422_03_Lab_Assignment02_Fall2024_-_MAHIR_TAJWAR_RAHMAN.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/3/22299422_Mahir_Tajwar_Rahman_CSE422_03_Lab_Assignment02_Fall2024_-_MAHIR_TAJWAR_RAHMAN.py<p></p><pre>
+import random
+import numpy as np
+# random.seed(42)
+
+#Part - 1
+#task 1 (returns 1 random binary string)
+def population(N,T):
+    s=""
+    for i in range(N*T):
+        s+=random.choice("01")
+    return s
+
+
+#task 2
+def fitness(N,T,population_arr):
+    fitness_arr={}
+    for i in range(len(population_arr)):
+        fitness_arr[population_arr[i]]=0
+
+        for r in range(0,N*T,N):
+            overlap=0
+            for c in range(N):
+                overlap+=int(population_arr[i][r+c])
+            if overlap!=0:
+                overlap-=1
+            fitness_arr[population_arr[i]]-=overlap
+
+        for c in range(N):
+            consistency=0
+            for r in range(0,N*T,N):
+                consistency+=int(population_arr[i][r+c])
+            consistency-=1
+            fitness_arr[population_arr[i]]-=abs(consistency)
+
+    return fitness_arr
+
+#task 3
+def random_selection(population_arr):
+    return random.sample(population_arr, 2)
+    
+
+
+#task 4 (takes a parent pair, returns 2 children)
+def single_point_crossover(parent_pair):
+    break_index=random.randint(1,len(parent_pair[0])-1) #randomize breakpoint
+<a name="1"></a><font color="#00FF00"><a href="match236-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_6.gif"/></a>
+
+    parent11=parent_pair[0][:break_index]
+    parent12=parent_pair[0][break_index:]
+    parent21=parent_pair[1][:break_index]
+    parent22=parent_pair[1][break_index:]
+
+    child1=parent11+parent22
+    child2=parent21+parent12
+</font>
+    return child1,child2
+
+#task 5 (single point mutation)
+def mutation(child): 
+    mutation_rate=0.01
+    x = random.uniform(0, 1)
+    mutation_index=random.randint(0, len(child)-1)
+
+    child_list=list(child)
+    if x&lt;=mutation_rate:
+        if child_list[mutation_index]=="1":
+            child_list[mutation_index]="0"
+        else:
+            child_list[mutation_index]="1"
+    child="".join(child_list)
+    return child
+
+
+
+def genetic(N,T):
+    #task 6 (creating initial population)
+    population_arr=[]
+    for i in range(20):
+        population_arr.append(population(N,T))
+
+    #checking if goal is reached
+    fitness_arr=fitness(N,T,population_arr)
+    for k,v in fitness_arr.items():
+        if v==0 and k!="0"*(N*T): #not accepting all zeros
+                # print("goal found in initial population")
+                print(k)
+                print(v)
+                return 
+        
+    #task 7 (running genetic algorithm)
+    for i in range(10):
+        #creating 10pairs of parents
+        parent_pair_arr=[]
+        for i in range(len(population_arr)//2):
+            parent_pair_arr.append(random_selection(population_arr))
+
+        #generating 20 childs from 10 pairs of parent
+        child_array=[]
+        for i in range(len(parent_pair_arr)):
+            siblings=single_point_crossover(parent_pair_arr[i])
+            child_array.append(siblings[0])
+            child_array.append(siblings[1])
+
+        #mutating
+        for i in range(len(child_array)):
+            child_array[i]=mutation(child_array[i])
+
+        #checking if goal is reached
+        fitness_arr=fitness(N,T,child_array)
+        for k,v in fitness_arr.items():
+            if v==0 and k!="0"*(N*T): #not accepting all zeros
+                # print("goal found during iteration")
+                print(k)
+                print(v)
+                return
+
+        #changing population_arr to new child_array
+        population_arr=child_array
+            
+    max(fitness_arr.values())
+    for k,v in fitness_arr.items():
+        if v==max(fitness_arr.values()) and k!="0"*(N*T): #not accepting all zeros
+            # print("goal not found during iteration")
+            print(k)
+            print(v)
+            return
+
+  
+# Part-2
+def two_point_crossover(parent_pair):
+    first_point= random.randint(1,len(parent_pair[0])-1)
+    second_point= random.randint(first_point+1,len(parent_pair[0])-1)
+    print(f"1st point: between {first_point-1} and {first_point}\n2nd point: between {second_point-1} and {second_point}")
+
+<a name="0"></a><font color="#FF0000"><a href="match236-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_9.gif"/></a>
+
+    parent11=parent_pair[0][:first_point]
+    parent12=parent_pair[0][first_point:second_point]
+    parent13=parent_pair[0][second_point:]
+
+    parent21=parent_pair[1][:first_point]
+    parent22=parent_pair[1][first_point:second_point]
+    parent23=parent_pair[1][second_point:]
+
+    child1=parent11+parent22+parent13
+    child2=parent21+parent12+parent23
+</font>
+    return child1,child2
+
+def genetic_part2(N,T):
+    population_arr=[]
+    for i in range(20):
+        population_arr.append(population(N,T))
+
+    parent_pair=random_selection(population_arr)
+
+    children_pair=two_point_crossover(parent_pair)
+
+    print(f"Parent 1: {parent_pair[0]}\nParent 2: {parent_pair[1]}")
+    print(f"Children: {children_pair[0]}, {children_pair[1]}")
+
+
+#driver code
+n_t=input("Enter the number of courses and the number of timeslots for a particular day separeted by space: ")
+n_t=list(map(int,n_t.split()))
+
+course_list=[]
+for i in range(n_t[0]):
+    course_list.append(input("Enter course name: "))
+
+
+print("-----------------------------------------")
+print("Part - 1:")
+genetic(n_t[0],n_t[1])
+
+print("-----------------------------------------")
+print("Part - 2:")
+genetic_part2(n_t[0],n_t[1])
+</pre>
+</body>
+</html>

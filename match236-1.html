@@ -1,0 +1,203 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/3/22299422_Mahir_Tajwar_Rahman_CSE422_03_Lab_Assignment02_Fall2024_-_MAHIR_TAJWAR_RAHMAN.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/18/24141181_MD_Shahriar_hossain_CSE422_18_Assignment02_Fall2024_-_MD_SHAHRIAR_HOSSAIN.py<p></p><pre>
+print("-------------&gt;  Task 1 &lt;-------------")
+
+import random as rnd
+import textwrap as tw
+import sys
+
+numOfCourses = int(input("Enter the number of courses: "))
+numOfTimeSlots = int(input("Enter the number of time slots: "))
+
+if numOfCourses&gt;numOfTimeSlots:
+    sys.exit("The number of courses cannot be greater than the number of time slots")
+courseSequence = []
+
+while len(courseSequence) &lt; numOfCourses:
+    course = input("Enter the course code: ")
+    courseSequence.append(course)
+
+
+def CalcPopulation(numOfCourses, numOfTimeSlots):
+    lenOfString = numOfCourses * numOfTimeSlots
+    return ''.join(rnd.choice('01') for _ in range(lenOfString))
+
+
+def CalcPopulationFitness(InitialPopulation, numOfCourses, numOfTimeSlots):
+    i=0
+    totalPenalty = 0
+    fitnessData = []
+    while i&lt;len(InitialPopulation):
+
+        timeSlotPartition = tw.wrap(InitialPopulation[i], numOfCourses)
+        overLapping = 0
+        consistancy = 0
+
+        for j in range(len(timeSlotPartition)):
+            countNumOfOnes = timeSlotPartition[j].count('1')
+            if countNumOfOnes &gt;1:
+                overLapping += (countNumOfOnes-1)
+
+        for x in range(numOfCourses):
+            count = 0
+            for y in range(numOfTimeSlots):
+                if timeSlotPartition[y][x] == '1':
+                    count += 1
+            consistancy += abs(count-1)
+
+        totalPenalty = -(overLapping + consistancy)
+        fitnessData.append((timeSlotPartition,totalPenalty))
+        i+=1
+
+    return fitnessData
+
+
+def RemoveUnfitPopulationAndSort(arr, double = False):
+
+    newArr = []
+    for strg in arr:
+        merge = ''.join(strg[0])
+        newArr.append((merge, strg[1]))
+
+    newArr.sort(key=lambda x: x[1], reverse=True)
+    if double:
+        newArr.pop()
+        newArr.pop()
+        return newArr
+    
+    newArr.pop()
+    return newArr
+
+
+def GeneMutation(offspring):
+    offspring = list(offspring)
+    randomIndex = rnd.randint(0, len(offspring)-1)
+    offspring[randomIndex] = '1' if offspring[randomIndex] == '0' else '0'
+    return ''.join(offspring)
+
+def GeneCrossOver(parent1, parent2, numOfCourses, numOfTimeSlots):
+    if len(parent1[0])%2 == 0:
+        half = len(parent1[0])//2
+<a name="1"></a><font color="#00FF00"><a href="match236-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_5.gif"/></a>
+
+        gene1p1 = parent1[0][:half]
+        gene1p2 = parent1[0][half:]
+        gene2p1 = parent2[0][:half]
+        gene2p2 = parent2[0][half:]
+        child1 = gene1p1 + gene2p2
+        child2 = gene2p1 + gene1p2
+</font>    else:
+        half = (len(parent1[0])+1)//2
+        gene1p1 = parent1[0][:half]
+        gene1p2 = parent1[0][half:]
+        gene2p1 = parent2[0][:half]
+        gene2p2 = parent2[0][half:]
+        child1 = gene1p1 + gene2p2
+        child2 = gene2p1 + gene1p2
+    
+    child1 = GeneMutation(child1)
+    child2 = GeneMutation(child2)
+
+    newPopulation=[child1, child2]
+
+
+    getFitenssCheck = CalcPopulationFitness(newPopulation, numOfCourses, numOfTimeSlots)
+    newArr = []
+    for strg in getFitenssCheck:
+        merge = ''.join(strg[0])
+        newArr.append((merge, strg[1]))
+
+
+    return newArr
+
+InitialPopulation1 = CalcPopulation(numOfCourses, numOfTimeSlots)
+InitialPopulation2 = CalcPopulation(numOfCourses, numOfTimeSlots)
+InitialPopulation3 = CalcPopulation(numOfCourses, numOfTimeSlots)
+InitialPopulation4 = CalcPopulation(numOfCourses, numOfTimeSlots)
+
+InitialPopulation = [InitialPopulation1, InitialPopulation2, InitialPopulation3, InitialPopulation4] 
+getFitenss = CalcPopulationFitness(InitialPopulation, numOfCourses, numOfTimeSlots)
+updatedPopulation = RemoveUnfitPopulationAndSort(getFitenss)
+
+i = 10
+while i&gt;0:
+    if updatedPopulation[0][1] == 0:
+        break
+    getNewPopulation = GeneCrossOver(updatedPopulation[0], updatedPopulation[1], numOfCourses, numOfTimeSlots)
+    updatedPopulation.append(getNewPopulation[0])
+    updatedPopulation.append(getNewPopulation[1])
+    updatedPopulation = RemoveUnfitPopulationAndSort(updatedPopulation,True)
+    i-=1
+
+print("The best solution is: ", updatedPopulation[0][0])
+print("The penalty is: ", updatedPopulation[0][1])
+
+print("-------------&gt;  Task 2 &lt;-------------")
+def TwoPointCrossOver(parent1, parent2, numOfCourses, numOfTimeSlots):
+    idxPoint1 = rnd.choice([2,3])
+    idxPoint2 = rnd.choice([5,6])
+
+<a name="0"></a><font color="#FF0000"><a href="match236-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_7.gif"/></a>
+
+    gene1p1 = parent1[0][:idxPoint1]
+    gene1p2 = parent1[0][idxPoint1:idxPoint2]
+    gene1p3 = parent1[0][idxPoint2:]
+
+    gene2p1 = parent2[0][:idxPoint1]
+    gene2p2 = parent2[0][idxPoint1:idxPoint2]
+    gene2p3 = parent2[0][idxPoint2:]
+
+    child1 = gene1p1 + gene2p2 + gene1p3
+    child2 = gene2p1 + gene1p2 + gene2p3
+</font>
+    child1 = GeneMutation(child1)
+    child2 = GeneMutation(child2)
+
+    newPopulation=[child1, child2]
+
+    getFitenssCheck = CalcPopulationFitness(newPopulation, numOfCourses, numOfTimeSlots)
+    newArr = []
+    for strg in getFitenssCheck:
+        merge = ''.join(strg[0])
+        newArr.append((merge, strg[1]))
+
+    return newArr
+
+numOfCourses = int(input("Enter the number of courses: "))
+numOfTimeSlots = int(input("Enter the number of time slots: "))
+
+if numOfCourses&gt;numOfTimeSlots:
+    sys.exit("The number of courses cannot be greater than the number of time slots")
+courseSequence = []
+
+while len(courseSequence) &lt; numOfCourses:
+    course = input("Enter the course code: ")
+    courseSequence.append(course)
+
+InitialPopulation1 = CalcPopulation(numOfCourses, numOfTimeSlots)
+InitialPopulation2 = CalcPopulation(numOfCourses, numOfTimeSlots)
+InitialPopulation3 = CalcPopulation(numOfCourses, numOfTimeSlots)
+InitialPopulation4 = CalcPopulation(numOfCourses, numOfTimeSlots)
+
+InitialPopulation = [InitialPopulation1, InitialPopulation2, InitialPopulation3, InitialPopulation4] 
+getFitenss = CalcPopulationFitness(InitialPopulation, numOfCourses, numOfTimeSlots)
+updatedPopulation = RemoveUnfitPopulationAndSort(getFitenss)
+
+i = 100
+while i&gt;0:
+    if updatedPopulation[0][1] == 0:
+        break
+    getNewPopulation = TwoPointCrossOver(updatedPopulation[0], updatedPopulation[1], numOfCourses, numOfTimeSlots)
+    updatedPopulation.append(getNewPopulation[0])
+    updatedPopulation.append(getNewPopulation[1])
+    updatedPopulation = RemoveUnfitPopulationAndSort(updatedPopulation,True)
+    i-=1
+print("The best solution is: ", updatedPopulation[0][0])
+print("The penalty is: ", updatedPopulation[0][1])</pre>
+</body>
+</html>

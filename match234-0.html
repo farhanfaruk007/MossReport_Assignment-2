@@ -1,0 +1,147 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/4/20201058_al_zaber_nahin_04_assignment02_fall2024_-_AL-ZABER_NAHIN.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/4/20201058_al_zaber_nahin_04_assignment02_fall2024_-_AL-ZABER_NAHIN.py<p></p><pre>
+#Q1
+
+import random
+
+
+<a name="1"></a><font color="#00FF00"><a href="match234-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_6.gif"/></a>
+
+def calculate_fitness(chromosome, num_courses, num_timeslots):
+    o_p = 0
+    c_p = 0
+
+
+    schedule = [chromosome[i:i+num_courses] for i in range(0, len(chromosome), num_courses)]
+
+
+    for timeslot in schedule:
+        num_scheduled = sum(timeslot)
+</font>        if num_scheduled &gt; 1:
+            o_p += (num_scheduled - 1)
+
+
+    course_cnt = [0] * num_courses
+    for timeslot in schedule:
+        for i in range(num_courses):
+            if timeslot[i] == 1:
+                course_cnt[i] += 1
+
+    for cnt in course_cnt:
+        if cnt != 1:
+<a name="2"></a><font color="#0000FF"><a href="match234-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_6.gif"/></a>
+
+            c_p += abs(cnt - 1)
+
+
+    t_p = o_p + c_p
+    fitness = -t_p
+    return fitness
+
+
+def crossover(p1, p2):
+    point = random.randint(1, len(p1) - 1)
+    c1 = p1[:point] + p2[point:]
+</font>    c2 = p2[:point] + p1[point:]
+    return c1, c2
+
+
+def mutate(chromosome, mutation_rate=0.1):
+    for i in range(len(chromosome)):
+        if random.random() &lt; mutation_rate:
+            chromosome[i] = 1 - chromosome[i]
+    return chromosome
+
+
+def generate_population(pop_size, num_genes):
+    return [[random.randint(0, 1) for _ in range(num_genes)] for _ in range(pop_size)]
+
+
+def genetic_algorithm(num_courses, num_timeslots, max_generations=100, pop_size=10, mutation_rate=0.1):
+    num_genes = num_courses * num_timeslots
+    population = generate_population(pop_size, num_genes)
+<a name="0"></a><font color="#FF0000"><a href="match234-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_8.gif"/></a>
+
+    best_solution = None
+    best_fitness = float('-inf')
+
+    for generation in range(max_generations):
+
+        fitness_values = [calculate_fitness(chromo, num_courses, num_timeslots) for chromo in population]
+
+
+        for i in range(len(population)):
+            if fitness_values[i] &gt; best_fitness:
+                best_fitness = fitness_values[i]
+                best_solution = population[i]
+</font>
+
+        fitness_sum = sum(fitness_values)
+        probabilities = [f / fitness_sum for f in fitness_values]
+        parents = random.choices(population, weights=probabilities, k=pop_size)
+
+
+        next_gen = []
+        for i in range(0, pop_size, 2):
+            p1, p2 = parents[i], parents[(i+1) % pop_size]
+            c1, c2 = crossover(p1, p2)
+            next_gen.append(c1)
+            next_gen.append(c2)
+
+
+        population = [mutate(chromo, mutation_rate) for chromo in next_gen]
+
+    return best_solution, best_fitness
+
+
+with open("/content/input2.txt", "r") as file:
+    lines = file.readlines()
+
+
+num_courses, num_timeslots = map(int, lines[0].split())
+courses = [line.strip() for line in lines[1:]]
+
+
+best_chromosome, best_fitness = genetic_algorithm(num_courses, num_timeslots)
+
+
+print( ''.join(map(str, best_chromosome)))
+print( best_fitness)
+
+#Q2
+
+import random
+
+# Step 1: Define the initial population
+population = [
+    "101010101",
+    "110011001",
+    "000111000",
+    "111000111"
+]
+
+# Randomly select two parents
+parent1 = random.choice(population)
+parent2 = random.choice([p for p in population if p != parent1])
+
+#Randomly select 2 crossover point(second point after first)
+length = len(parent1)
+point1 = random.randint(1, length - 2)
+point2 = random.randint(point1 + 1, length - 1)
+
+#two-point crossover
+offspring1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+offspring2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+
+print("Parent 1:", parent1)
+print("Parent 2:", parent2)
+print(f"Chosen points: {point1} and {point2}")
+print("Offspring 1:", offspring1)
+print("Offspring 2:", offspring2)</pre>
+</body>
+</html>

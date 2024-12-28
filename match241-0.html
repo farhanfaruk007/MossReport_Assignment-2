@@ -1,0 +1,147 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/12/21201526_Siam_Ferdous_CSE422_12_Assignment02_Fall2024_-_SIAM_FERDOUS.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/12/21201526_Siam_Ferdous_CSE422_12_Assignment02_Fall2024_-_SIAM_FERDOUS.py<p></p><pre>
+#part 1
+def overlap_penalty(schedule, N, T):
+    o_penalty = 0
+    for i in range(T):
+        num_scheduled = 0
+        for j in range(N):
+<a name="1"></a><font color="#00FF00"><a href="match241-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_6.gif"/></a>
+
+            if schedule[i * N + j] == '1':  
+                num_scheduled += 1
+        if num_scheduled &gt; 1:
+            o_penalty += num_scheduled - 1  
+    return o_penalty
+  
+def consistency_penalty(schedule, N, T):
+    c_penalty = 0
+    for i in range(N):
+        num_scheduled = 0
+        for j in range(T):
+</font>            if schedule[j * N + i] == '1':
+                num_scheduled += 1
+<a name="2"></a><font color="#0000FF"><a href="match241-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_4.gif"/></a>
+
+        c_penalty += abs(num_scheduled - 1) 
+    return c_penalty
+
+
+def calculate_fitness(schedule, N, T):
+    o = overlap_penalty(schedule, N, T)
+    c = consistency_penalty(schedule, N, T)
+</font>    return -(o + c)  
+#testing
+#n=calculate_fitness("110110010", 3, 3)
+#print(n)
+import random
+def create_pop(N, T, p_size):
+    lst = []
+    for i in range(p_size):
+        p_str = ''
+        for j in range(N * T):
+            p_str += random.choice(['0', '1'])
+        lst.append(p_str)
+    return lst
+
+#s_p means single point crossover
+def s_p_crossover(gen0_1, gen0_2, N, T):
+    point = random.randint(0, N * T - 1) #point=crossover pointm, gen0=parent,gen1=offspring
+    gen1_1 = gen0_1[:point] + gen0_2[point:]  
+    gen1_2 = gen0_2[:point] + gen0_1[point:]
+    return gen1_1, gen1_2
+
+
+def mutation(chromosome, mutation_rate):
+    mutated = []
+    for i in chromosome:
+        if random.random() &lt; mutation_rate:
+            if i == "0":
+                mutated.append("1")
+            else:
+                mutated.append("0")
+        else:
+            mutated.append(i)
+    return "".join(mutated)
+
+def genetic_algo(n, t, pop_size=10, total_iterations=10, mutation_rate=0.01):
+    population = create_pop(n, t, pop_size)
+    schedule = None
+    fitness = float("-inf")
+    
+    for i in range(total_iterations):
+        lst_fitness = []
+        for j in range(len(population)):
+            lst_fitness.append(calculate_fitness(population[j], n, t))
+
+        for k in range(len(population)):
+            if lst_fitness[k] &gt; fitness:
+                fitness = lst_fitness[k]
+                schedule = population[k]
+
+        new_pop = []
+        while len(new_pop) &lt; pop_size:  
+            f_parent, s_parent = random.choices(population, k=2)
+            first, second = s_p_crossover(f_parent, s_parent, n, t)
+            first = mutation(first, mutation_rate)
+            second = mutation(second, mutation_rate)
+            new_pop.append(first)
+            if len(new_pop) &lt; pop_size:
+                new_pop.append(second)
+
+        population = new_pop[:pop_size]  
+        #print("Generation:", i+1, "Fitness:", fitness)
+        #for checking all files
+    return schedule, fitness
+
+f_input = open("input.txt", "r")
+first_line = f_input.readline().strip()
+N, T = map(int, first_line.split(" "))
+courses = []
+for i in range(N):
+    course = f_input.readline().strip()
+    courses.append(course)
+f_input.close()
+
+#b=best
+b_schedule, b_fitness = genetic_algo(N, T, 10, 10, 0.01)
+
+print("Best Schedule:", b_schedule)
+print("Best Fitness:", b_fitness)
+
+
+#part 2 
+<a name="0"></a><font color="#FF0000"><a href="match241-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_7.gif"/></a>
+
+def two_p_cross(gen0_1, gen0_2, N, T):
+    #gen0=parent,gen1=offspring
+    point1 = random.randint(0, N * T - 1) 
+    point2 = random.randint(point1+1, N * T-1)
+    gen1_1 = gen0_1[:point1] + gen0_2[point1:point2] + gen0_1[point2:]
+</font>    gen1_2 = gen0_2[:point1] + gen0_1[point1:point2] + gen0_2[point2:]
+    return gen1_1, gen1_2
+
+population = create_pop(N, T, 10)
+#f=first, s=second
+f_parent, s_parent = random.choices(population, k=2)
+offspring1, offspring2 = two_p_cross(f_parent, s_parent, N, T)
+print(f"offspring1: {offspring1}")
+print(f"offspring2: {offspring2}")
+
+#optional
+f_output = open("output.txt", "w")
+f_output.write(f"Best Schedule: {b_schedule}\n")
+f_output.write(f"Best Fitness: {b_fitness}\n")
+f_output.write(f"Offspring1: {offspring1}\n")
+f_output.write(f"Offspring2: {offspring2}\n")
+f_output.close()
+
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/3/22299314_MD_Adnan_Hossain_Sadi_CSE422_03_Lab_Assignment02_Fall2024_-_MD._ADNAN_HOSSAIN_SADI.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/3/22299314_MD_Adnan_Hossain_Sadi_CSE422_03_Lab_Assignment02_Fall2024_-_MD._ADNAN_HOSSAIN_SADI.py<p></p><pre>
+import random
+
+
+def createInitialPopulation(N, T, populationSize):
+    population = []
+    for i in range(populationSize):
+        temp = ""
+        for j in range(T * N):
+            a = random.randint(0, 1)
+            temp += str(a)
+        population.append(temp)
+
+    return population
+
+
+def fitnessCalc(population, N, T):
+    fitnessArray = []
+    for i in range(len(population)):
+        overlap = 0
+<a name="0"></a><font color="#FF0000"><a href="match68-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_13.gif"/></a>
+
+        consistency = 0
+        courseTracker = [0] * N
+        for j in range(T):
+            tslotcourses = population[i][j * N:(j + 1) * N]
+            count = 0
+            for k in range(N):
+
+                if tslotcourses[k] == '1':
+                    count += 1
+                    courseTracker[k] += 1
+            if count != 0:
+                overlap += count - 1
+        for l in range(len(courseTracker)):
+            consistency += abs(courseTracker[l] - 1)
+
+        val = overlap + consistency
+        fitnessArray.append(-val)
+    return fitnessArray
+
+
+def randomSelection(population):
+    tempPopulation = []
+</font>    selectedPairs = []
+    size = len(population)
+    if size == 1:
+        return None
+    while len(tempPopulation) &lt; size:
+        a = random.randint(0, size - 1)
+        b = random.randint(0, size - 1)
+        while b == a:
+            b = random.randint(0, size - 1)
+        if a not in tempPopulation and b not in tempPopulation:
+            tempPopulation.append(a)
+            tempPopulation.append(b)
+            selectedPairs.append([a, b])
+    return selectedPairs
+
+
+<a name="3"></a><font color="#00FFFF"><a href="match68-1.html#3" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_3_4.gif"/></a>
+
+def mutate(string):
+    a = random.randint(0, len(string) - 1)
+    b = random.randint(a, len(string) - 1)
+    size = b - a
+    temp = ''
+    for i in range(size):
+        x = random.randint(0, 1)
+</font>        temp += str(x)
+    mutatedString = string[:a] + temp + string[b:]
+<a name="1"></a><font color="#00FF00"><a href="match68-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_12.gif"/></a>
+
+    return mutatedString
+
+
+def singlePointCrossover(population, arr):
+    for i in arr:
+        parent1, parent2 = i
+        point = random.randint(0, len(population[parent1]) - 1)
+        parent1_left = population[parent1][:point]
+        parent2_left = population[parent2][:point]
+        parent1_right = population[parent1][point:]
+        parent2_right = population[parent2][point:]
+        child1 = parent1_left + parent2_right
+        child2 = parent2_left + parent1_right
+        child1 = mutate(child1)
+        child2 = mutate(child2)
+        population[parent1] = child1
+        population[parent2] = child2
+    return population
+</font>
+
+<a name="2"></a><font color="#0000FF"><a href="match68-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_11.gif"/></a>
+
+def twoPointCrossover(population, parent1, parent2):
+    point1 = random.randint(0, len(population[parent1]) - 1)
+    point2 = random.randint(point1, len(population[parent2]) - 1)
+    # print(point1, point2) # for reference
+    child1 = population[parent1][:point1] + population[parent2][point1:point2] + population[parent1][point2:]
+    child2 = population[parent2][:point1] + population[parent1][point1:point2] + population[parent2][point2:]
+</font>    # print (population[parent1], population[parent2], child1, child2)
+    print(f"Resultant offsprings after two points crossover: {child1}, {child2}")
+
+
+<a name="4"></a><font color="#FF00FF"><a href="match68-1.html#4" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_4_4.gif"/></a>
+
+def randomSelectionFor2pc(population):
+    size = len(population)
+    if size == 1:
+        return None
+    a = random.randint(0, size - 1)
+    b = random.randint(0, size - 1)
+    while b == a:
+</font>        b = random.randint(0, size - 1)
+    return (a, b)
+
+
+with open("input.txt", "r") as file:
+    N, T = list(map(int, file.readline().split()))
+    courses = []
+    for i in range(N):
+        courses.append(file.readline().strip())
+
+    population = createInitialPopulation(N, T, 40)
+
+    flag = True
+
+    n = 50  # number of times the genetic algo would be allowed to be run given that the best solution has not been found
+
+    for i in range(n):
+        fitness = fitnessCalc(population, N, T)
+        if 0 in fitness:
+            index = fitness.index(0)
+            solution = population[index]
+            solStr = ''
+            solStr += str(solution)
+            solStr += '\n'
+            solStr += "0"
+            with open("output.txt", "w") as file1:
+                file1.write(solStr)
+            print(solStr)
+            flag = False
+            break
+        selectedParentIndex = randomSelection(population)
+        if selectedParentIndex == None:
+<a name="5"></a><font color="#FF0000"><a href="match68-1.html#5" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_3.gif"/></a>
+
+            with open("output.txt", "w") as file1:
+                file1.write("Not enough population to choose a parent pair")
+            flag = False
+            break
+        population = singlePointCrossover(population, selectedParentIndex)
+    if flag:
+        maxFitness = max(fitness)
+        index = fitness.index(maxFitness)
+        solution = population[index]
+</font>        solStr = ''
+        solStr += str(solution)
+        solStr += '\n'
+        solStr += str(maxFitness)
+        with open("output.txt", "w") as file1:
+            file1.write(solStr)
+        print(solStr)
+
+    parent1, parent2 = randomSelectionFor2pc(population)
+    twoPointCrossover(population, parent1, parent2)
+</pre>
+</body>
+</html>

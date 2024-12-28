@@ -1,0 +1,162 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/1/21201453_aniruddha_ayan_cse422_01_assignment02_fall2024_-_ANIRUDDHA_AYAN.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/18/21201705_mazharul_islam_cse422_18_assignment02_fall2024_-_MAZHARUL_ISLAM.py<p></p><pre>
+
+
+####p_1
+
+import random
+def read_input_file(filename):
+    with open(filename, 'r') as inputfile:
+        lines = inputfile.readlines()
+
+
+    n, t = map(int, lines[0].split())
+
+
+    courses = [line.strip() for line in lines[1:]]
+
+    return n, t, courses
+
+
+def calculate_fitness(chromosome, n, t):
+    total_penalty = 0
+
+
+<a name="2"></a><font color="#0000FF"><a href="match237-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_4.gif"/></a>
+
+    timeslots = [chromosome[i*n:(i+1)*n] for i in range(t)]
+
+
+    overlap_penalty = 0
+    for timeslot in timeslots:
+</font>        scheduled_courses = sum(timeslot)
+        if scheduled_courses &gt; 1:
+            overlap_penalty += (scheduled_courses - 1)
+
+
+    consistency_penalty = 0
+    for course in range(n):
+        course_count = sum(timeslot[course] for timeslot in timeslots)
+        consistency_penalty += abs(course_count - 1)
+
+    total_penalty = overlap_penalty + consistency_penalty
+    return -total_penalty
+
+
+def generate_random_chromosome(n, t):
+    chromosome = []
+    for p in range(t):
+        timeslot = [0] * n
+        num_courses = random.randint(1, n)
+        for course in random.sample(range(n), num_courses):
+            timeslot[course] = 1
+        chromosome.extend(timeslot)
+    return chromosome
+
+def select_parents(population, fitness_scores):
+    parents = random.choices(population, weights=[abs(f) for f in fitness_scores], k=2)
+    return parents
+
+
+def single_point_crossover(parent1, parent2):
+    point = random.randint(1, len(parent1) - 1)
+    offspring1 = parent1[:point] + parent2[point:]
+    offspring2 = parent2[:point] + parent1[point:]
+    return offspring1, offspring2
+
+
+def mutate(chromosome, mutation_rate=0.01):
+    for i in range(len(chromosome)):
+        if random.random() &lt; mutation_rate:
+            chromosome[i] = 1 - chromosome[i]
+    return chromosome
+
+
+def genetic_algorithm(n, t, max_generations=1000, population_size=100, mutation_rate=0.02):
+
+<a name="0"></a><font color="#FF0000"><a href="match237-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_10.gif"/></a>
+
+    population = [generate_random_chromosome(n, t) for _ in range(population_size)]
+
+    for generation in range(max_generations):
+
+        fitness_scores = [calculate_fitness(chromosome, n, t) for chromosome in population]
+
+
+        max_fitness = max(fitness_scores)
+        if max_fitness == 0:
+            best_solution = population[fitness_scores.index(max_fitness)]
+            return best_solution, max_fitness
+
+
+        new_population = []
+        while len(new_population) &lt; population_size:
+            parent1, parent2 = select_parents(population, fitness_scores)
+            offspring1, offspring2 = single_point_crossover(parent1, parent2)
+            new_population.extend([mutate(offspring1, mutation_rate), mutate(offspring2, mutation_rate)])
+</font>
+        population = new_population[:population_size]
+
+
+    best_fitness = max(fitness_scores)
+    best_solution = population[fitness_scores.index(best_fitness)]
+    return best_solution, best_fitness
+
+# Main Execution
+if __name__ == "__main__":
+
+    n, t, courses = read_input_file('input.txt')
+
+
+    solution, fitness = genetic_algorithm(n, t)
+
+
+    print("Best Chromosome:", ''.join(map(str, solution)))
+    print("Fitness Value:", fitness)
+
+
+
+
+
+
+####p_2
+import random
+
+
+def twopointcrossover(parent1, parent2):
+    length = len(parent1)
+
+
+    point1 = random.randint(0, length - 2)
+    point2 = random.randint(point1 + 1, length - 1)
+
+
+    offspring1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+<a name="1"></a><font color="#00FF00"><a href="match237-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_4.gif"/></a>
+
+    offspring2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+
+    return offspring1, offspring2, point1, point2
+
+
+if __name__ == "__main__":
+</font>
+    parent1 = [0, 0, 0, 1, 1, 1, 0, 0, 0]
+    parent2 = [1, 1, 1, 0, 0, 0, 1, 1, 1]
+
+
+    offspring1, offspring2, point1, point2 = twopointcrossover(parent1, parent2)
+
+
+    print("Parent 1: ", ''.join(map(str, parent1)))
+    print("Parent 2: ", ''.join(map(str, parent2)))
+    print(f"Two Points: {point1} and {point2}")
+    print("Offspring 1:", ''.join(map(str, offspring1)))
+    print("Offspring 2:", ''.join(map(str, offspring2)))</pre>
+</body>
+</html>

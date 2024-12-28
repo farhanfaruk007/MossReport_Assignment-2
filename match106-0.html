@@ -1,0 +1,111 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/9/22301107_Sowmik_Das_gupta_22301107_-_SOWMIK_DAS_GUPTA.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/9/22301107_Sowmik_Das_gupta_22301107_-_SOWMIK_DAS_GUPTA.py<p></p><pre>
+<a name="1"></a><font color="#00FF00"><a href="match106-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_23.gif"/></a>
+
+import random
+
+# -------------------- Part 1 --------------------
+# Genetic Algorithm for Course Scheduling
+
+def assess_schedule_quality(timetable, subjects):
+    clash_demerits = 0
+    distribution_demerits = 0
+    for epoch in range(len(timetable[0])):
+        epoch_lineup = [timetable[subj_idx][epoch] for subj_idx in range(len(subjects))]
+        clash_demerits += len(epoch_lineup) - len(set(epoch_lineup))
+    for subject_index in range(len(subjects)):
+        distribution_demerits += abs(sum([timetable[subject_index][epoch] for epoch in
+                                          range(len(timetable[0]))]) - 1)
+    return -(clash_demerits + distribution_demerits)
+
+def pick_progenitors(gene_pool):
+    return random.choice(gene_pool), random.choice(gene_pool)
+
+def genetic_blend(dna_strand1, dna_strand2):
+    splice_point = random.randint(1, len(dna_strand1) - 1)
+    offspring1 = dna_strand1[:splice_point] + dna_strand2[splice_point:]
+</font>    offspring2 = dna_strand2[:splice_point] + dna_strand1[splice_point:]
+    return offspring1, offspring2
+
+<a name="0"></a><font color="#FF0000"><a href="match106-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_32.gif"/></a>
+
+def dna_tweak(genome, tweak_chance):
+    return [1 - gene if random.random() &lt; tweak_chance else gene for gene in genome]
+
+def spawn_population(horde_size, genome_length):
+    return [[random.randint(0, 1) for _ in range(genome_length)] for _ in range(horde_size)]
+
+def evolution_simulator(horde_size, tweak_chance, epoch_limit, subjects, epochs):
+    genome_length = len(subjects) * epochs
+    horde = spawn_population(horde_size, genome_length)
+    for _ in range(epoch_limit):
+        new_horde = []
+        for _ in range(horde_size // 2):
+            parent1, parent2 = pick_progenitors(horde)
+            child1, child2 = genetic_blend(parent1, parent2)
+            child1 = dna_tweak(child1, tweak_chance)
+            child2 = dna_tweak(child2, tweak_chance)
+            new_horde.extend([child1, child2])
+
+        horde = new_horde
+
+    quality_scores = [assess_schedule_quality([specimen[i:i+len(subjects)] for i in range(0,
+                                                                                        len(specimen), len(subjects))],
+                                                  subjects) for specimen in horde]
+    fittest_index = quality_scores.index(max(quality_scores))
+    fittest_specimen = horde[fittest_index]
+    return fittest_specimen, max(quality_scores)
+</font>
+def parse_scenario_from_console():
+    print("Enter the number of courses and timeslots (space-separated):")
+    counts = input().split()
+    subject_count = int(counts[0])
+    epoch_count = int(counts[1])
+    print(f"Enter {subject_count} course codes, one per line:")
+    subjects = [input().strip() for _ in range(subject_count)]
+    return subject_count, epoch_count, subjects
+
+# Input from console
+subject_count, epoch_count, subjects = parse_scenario_from_console()
+
+if epoch_count &lt; subject_count:
+    print("The number of timeslots (epochs) must be greater than or equal to the number of subjects.")
+else:
+<a name="2"></a><font color="#0000FF"><a href="match106-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_5.gif"/></a>
+
+    horde_size = 100
+    tweak_chance = 0.001
+    epoch_limit = 100
+    optimal_schedule, quality_score = evolution_simulator(horde_size, tweak_chance,
+                                                           epoch_limit, subjects, epoch_count)
+    print(''.join(map(str, optimal_schedule)))
+    print(quality_score)
+</font>
+# -------------------- Part 2 --------------------
+# Demonstration of Two-Point Crossover
+
+def two_point_crossover(parent1, parent2):
+    point1 = random.randint(0, len(parent1) - 2)
+    point2 = random.randint(point1 + 1, len(parent1) - 1)
+    child1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    child2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+    return child1, child2
+
+# Generate initial population
+population = spawn_population(10, subject_count * epoch_count)
+parent1, parent2 = pick_progenitors(population)
+child1, child2 = two_point_crossover(parent1, parent2)
+
+print("\nTwo-Point Crossover Results:")
+print(f"Parent 1: {''.join(map(str, parent1))}")
+print(f"Parent 2: {''.join(map(str, parent2))}")
+print(f"Child 1:  {''.join(map(str, child1))}")
+print(f"Child 2:  {''.join(map(str, child2))}")
+</pre>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/4/20201058_al_zaber_nahin_04_assignment02_fall2024_-_AL-ZABER_NAHIN.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/4/20301184_Abu_Raihan_Tashin_CSE422_04_Assignment02_Fall2024_-_Abu_Raihan_Tashin.py<p></p><pre>
+#############################Part 1#################################
+
+import random
+def generate_population(num_courses, num_timeslots, population_size=10):
+    chromosome_length = num_courses * num_timeslots
+    population = [''.join(random.choice('01') for _ in range(chromosome_length)) for _ in range(population_size)]
+    return population
+
+<a name="1"></a><font color="#00FF00"><a href="match234-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_6.gif"/></a>
+
+def calculate_fitness(chromosome, num_courses, num_timeslots):
+    penalty_overlap = 0
+    penalty_consistency = 0
+    chromosome_matrix = [chromosome[i:i+num_courses] for i in range(0, len(chromosome), num_courses)]
+    
+    # Overlap penalty
+    for timeslot in chromosome_matrix:
+        overlap_count = timeslot.count('1')
+</font>        if overlap_count &gt; 1:
+            penalty_overlap += overlap_count - 1
+    
+    # Consistency penalty
+    for course_idx in range(num_courses):
+        occurrences = sum(timeslot[course_idx] == '1' for timeslot in chromosome_matrix)
+<a name="2"></a><font color="#0000FF"><a href="match234-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_5.gif"/></a>
+
+        penalty_consistency += abs(occurrences - 1)
+    
+    total_penalty = penalty_overlap + penalty_consistency
+    fitness = -total_penalty
+    return fitness
+
+def single_point_crossover(parent1, parent2):
+    point = random.randint(1, len(parent1) - 1)
+    offspring1 = parent1[:point] + parent2[point:]
+</font>    offspring2 = parent2[:point] + parent1[point:]
+    return offspring1, offspring2
+
+def mutate(chromosome, mutation_rate=0.01):
+    chromosome = list(chromosome)
+    for i in range(len(chromosome)):
+        if random.random() &lt; mutation_rate:
+            chromosome[i] = '1' if chromosome[i] == '0' else '0'
+    return ''.join(chromosome)
+
+def genetic_algorithm(num_courses, num_timeslots, max_generations=100, population_size=10):
+    population = generate_population(num_courses, num_timeslots, population_size)
+<a name="0"></a><font color="#FF0000"><a href="match234-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_7.gif"/></a>
+
+    best_chromosome = None
+    best_fitness = float('-inf')
+
+    for _ in range(max_generations):
+        fitness_values = [calculate_fitness(chromosome, num_courses, num_timeslots) for chromosome in population]
+        for i in range(len(population)):
+            if fitness_values[i] &gt; best_fitness:
+                best_fitness = fitness_values[i]
+                best_chromosome = population[i]
+</font>
+        parent1, parent2 = random.choices(population, k=2)
+        offspring1, offspring2 = single_point_crossover(parent1, parent2)
+        offspring1 = mutate(offspring1)
+        offspring2 = mutate(offspring2)
+
+        # Replace the worst-performing chromosomes
+        population = sorted(zip(population, fitness_values), key=lambda x: x[1], reverse=True)
+        population = [x[0] for x in population[:-2]] + [offspring1, offspring2]
+
+    return best_chromosome, best_fitness
+
+# Input and Output handling
+def main():
+    with open('input.txt', 'r') as file:
+        lines = file.readlines()
+    num_courses, num_timeslots = map(int, lines[0].strip().split())
+    courses = [line.strip() for line in lines[1:]]
+
+    best_chromosome, best_fitness = genetic_algorithm(num_courses, num_timeslots)
+    
+    with open('output.txt', 'w') as file:
+        file.write("************* PART 1 OUTPUT ****************\n")
+        file.write(f"{best_chromosome}\n") 
+        file.write(f"{best_fitness}\n")  
+
+if __name__ == "__main__":
+    main()
+
+##################### part 2 #########################
+
+def generate_population(population_size, chromosome_length):
+    population = []
+    for _ in range(population_size):
+        chromosome = ''.join(random.choice('01') for _ in range(chromosome_length))
+        population.append(chromosome)
+    return population
+
+def two_point_crossover(parent1, parent2):
+    point1 = 2
+    point2 = 6
+    offspring1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    offspring2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+
+    return offspring1, offspring2
+
+# Main Function to Perform 100 Iterations of Two-Point Crossover
+def main():
+    population_size = 10 
+    chromosome_length = 9  
+    
+    # Generate the population of size 10
+    population = generate_population(population_size, chromosome_length)
+
+    with open('output.txt', 'a') as file:
+        file.write("################# PART 2 ####################\n")
+        # Perform 100 iterations of two-point crossover
+        for iteration in range(100):
+            parent1, parent2 = random.sample(population, 2)
+            offspring1, offspring2 = two_point_crossover(parent1, parent2)
+            file.write(f"Iteration {iteration + 1}:\n")
+            file.write(f"Parent 1: {parent1}\n")
+            file.write(f"Parent 2: {parent2}\n")
+            file.write(f"Offspring 1: {offspring1}\n")
+            file.write(f"Offspring 2: {offspring2}\n")
+
+if __name__ == "__main__":
+    main()
+
+</pre>
+</body>
+</html>

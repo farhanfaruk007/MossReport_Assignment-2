@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/10/22101417_CSE422_Section10_LabAssignment2_-_NILOY_KUMAR_SAHA.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/15/24241305_MD.JAMIL_CSE422_15_Lab_Assignment02_Fall2024_-_MD._JAMIL.py<p></p><pre>
+#Task1
+import random
+def fitness_function(chr, N, T):
+    overlap = 0
+    consistancy = 0
+    segment = []
+    index = 0
+    while index &lt; len(chr):
+        segment.append(chr[index:index + N])
+        index += N
+    for i in segment:
+        cro = sum(int(j) for j in i)
+        if cro &gt; 1:
+            overlap += cro - 1
+    for i in range(N):
+        crs = [segment[j][i] for j in range(T)]
+        total = sum(int(p) for p in crs)
+        if total != 1:
+            consistancy += abs(total - 1)
+    function = -(overlap + consistancy)
+    return function
+def generate_chromosome(N, T):
+    chromosome = ""
+    for _ in range(T):
+        s = [random.randint(0, 1) for _ in range(N)]
+        while sum(s) == 0:
+            s = [random.randint(0, 1) for _ in range(N)]
+        chromosome+=''.join(map(str,s))
+    return chromosome
+def parent(p, f):
+    total_f = sum(f)
+    select = [i / total_f for i in f]
+    selected_parents = random.choices(p, weights=select, k=3)
+    return selected_parents
+def crossover(parent1, parent2):
+    p = random.randint(1, len(parent1) - 1)
+    child1 = parent1[:p] + parent2[p:]
+<a name="0"></a><font color="#FF0000"><a href="match186-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_25.gif"/></a>
+
+    child2 = parent2[:p] + parent1[p:]
+    return child1, child2
+def mutattion(chromo, m_rate):
+    mutated_chromo = ''
+    for i in chromo:
+        if random.random() &lt; m_rate:
+            mutated_chromo += '1' if i == '0' else '0'
+        else:
+            mutated_chromo += i
+    return mutated_chromo
+def genetic_algo(N, T, size, max_generations, rate):
+    population=[generate_chromosome(N, T) for _ in range(size)]
+    for _ in range(max_generations):
+        fitnessvalue=[fitness_function(chromosome, N, T) for chromosome in population]
+        best_fitness=max(fitnessvalue)
+        if best_fitness==0:
+            break
+        next_population=[]
+        for _ in range(size // 2):
+            p=parent(population, fitnessvalue)
+            c1, c2=crossover(p[0], p[1])
+            newC1=mutattion(c1, rate)
+            newC2=mutattion(c2, rate)
+            next_population.extend([newC1, newC2])
+        population=next_population
+    best=max(population, key=lambda x: fitness_function(x, N, T))
+    return best, fitness_function(best, N, T)
+N, T, *course=open(r'C:\Users\jamil\Downloads\input.txt').read().split()
+</font>N, T = int(N), int(T)
+best, fitness_value = genetic_algo(N, T, 5000, 5000, 0.1)
+print("Best Chromosome:", best)
+print("Best Fitness:", fitness_value)
+
+
+#Task2
+import random
+def chr(N,T):
+    chromosome=[]
+    for _ in range(T):
+        time=[random.randint(0,1) for _ in range(N)]
+        while sum(time)==0:
+            time=[random.randint(0,1) for _ in range(N)]
+        chromosome.extend(time)
+    return chromosome
+def parents(population,slots):
+    return random.sample(population,slots)
+def twoPoint(parent1,parent2):
+    idx=sorted(random.sample(range(1, len(parent1)),2))
+    child1=parent1[:idx[0]]+parent2[idx[0]:idx[1]]+parent1[idx[1]:]
+    child2=parent2[:idx[0]]+parent1[idx[0]:idx[1]]+parent2[idx[1]:]
+    return child1, child2
+N=3
+T=3
+population= [chr(N,T) for _ in range(10)]
+par=parents(population,3)
+child3,child4=twoPoint(par[0],par[1])
+print("Parent 1:",par[0])
+print("Parent 2:",par[1])
+print("Offspring 1:",child3)
+print("Offspring 2:",child4)</pre>
+</body>
+</html>

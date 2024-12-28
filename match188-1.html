@@ -1,0 +1,113 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/10/21301071_nuzhatkabir.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/12/21301580_Abdullah_Al_Mamun_CSE422_12_Assignment02_Fall2024_-_ABDULLAH_AL_MAMUN.py<p></p><pre>
+
+# Part 1: Genetic Algorithm Functions
+
+import random
+import numpy as np
+
+def initialize_population(pop_size, chrom_length):
+    population = np.random.randint(2, size=(pop_size, chrom_length))
+    return population
+
+population = initialize_population(10, 9)
+
+def select_random_parents(population):
+    parent1 = random.choice(population)
+    parent2 = random.choice(population)
+    return list(parent1), list(parent2)
+
+def single_point_crossover(parent1, parent2):
+    crossover_point = random.randint(0, len(parent1) - 1)
+<a name="2"></a><font color="#0000FF"><a href="match188-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_6.gif"/></a>
+
+    child1 = parent2[:crossover_point] + parent1[crossover_point:]
+    child2 = parent1[:crossover_point] + parent2[crossover_point:]
+    return child1, child2
+
+def mutate_population(offsprings):
+    for offspring in offsprings:
+</font>        mutation_index = random.randint(0, len(offspring) - 1)
+        offspring[mutation_index] = 1 - offspring[mutation_index]
+    return offsprings
+
+def calculate_fitness(chromosomes, num_courses, num_timeslots):
+    penalties = []
+    for chrom in chromosomes:
+        overlap_penalty = 0
+        consistency_penalty = 0
+
+        course_schedules = [0] * num_courses
+
+        for i in range(0, len(chrom), num_timeslots):
+            slot_sum = sum(chrom[i:i + num_timeslots])
+            overlap_penalty += abs(slot_sum - 1)
+
+            for j in range(num_timeslots):
+                if chrom[i + j] == 1:
+                    course_schedules[j] += 1
+
+        consistency_penalty += sum(abs(schedule - 1) for schedule in course_schedules)
+        total_penalty = -(overlap_penalty + consistency_penalty)
+        penalties.append(total_penalty)
+
+    return penalties
+
+<a name="1"></a><font color="#00FF00"><a href="match188-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_14.gif"/></a>
+
+def genetic_algorithm(population, timeslots, courses, chrom_length):
+    offspring_population = []
+    for _ in range(10):
+        parent1, parent2 = select_random_parents(population)
+        offspring1, offspring2 = single_point_crossover(parent1, parent2)
+        offspring_population.append(offspring1)
+        offspring_population.append(offspring2)
+
+    mutated_population = mutate_population(offspring_population)
+    fitness_scores = calculate_fitness(mutated_population, courses, timeslots)
+    best_score = max(fitness_scores)
+    best_index = fitness_scores.index(best_score)
+    best_chromosome = mutated_population[best_index]
+
+    return fitness_scores, mutated_population, best_score, best_index, best_chromosome
+</font>
+# Read input for Part 1
+with open("input.txt", "r") as input_file:
+    input_lines = input_file.readlines()
+
+course_count, timeslot_count = map(int, input_lines[0].strip().split())
+chrom_length = course_count * timeslot_count
+
+population = initialize_population(10, chrom_length)
+fitness_scores, new_population, max_score, best_idx, best_chrom = genetic_algorithm(population, timeslot_count, course_count, chrom_length)
+
+print(best_chrom)
+<a name="0"></a><font color="#FF0000"><a href="match188-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_14.gif"/></a>
+
+print(max_score)
+
+# Part 2: Double Point Crossover
+
+def double_point_crossover(parent1, parent2):
+    index1 = random.randint(1,len(parent1)-5)
+    index2 = index1 + 3
+
+    child1 = parent1[:index1] + parent2[index1:index2] + parent1[index2:]
+    child2 = parent2[:index1] + parent1[index1:index2] + parent2[index2:]
+    print("Index1:", index1, "Index2:", index2)
+    print("Child 1:", child1)
+</font>    print("Child 2:", child2)
+    return child1, child2
+
+def genetic_algorithm_with_double_crossover(population, timeslots, courses, chrom_length):
+    parent1, parent2 = select_random_parents(population)
+    double_point_crossover(parent1, parent2)
+
+genetic_algorithm_with_double_crossover(population, timeslot_count, course_count, chrom_length)</pre>
+</body>
+</html>

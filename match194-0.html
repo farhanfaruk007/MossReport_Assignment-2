@@ -1,0 +1,124 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/9/21301382_CSE422_lab2_21301382.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/9/21301382_CSE422_lab2_21301382.py<p></p><pre>
+import random
+
+def read_input(filename):
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+<a name="0"></a><font color="#FF0000"><a href="match194-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_18.gif"/></a>
+
+        Num, Time = map(int, lines[0].strip().split())
+        coursename = [line.strip() for line in lines[1:Num +1]]
+    return Num, Time, coursename
+
+def generate_initial_population(popSize, Num, Time):
+    current = []
+    for _ in range(popSize):
+        chromosome = ['0'] * (Num * Time)
+        for i in range(Num):
+            timeSlot = random.randint(0, Time - 1)
+            chromosome[timeSlot * Num + i] = '1'
+        current.append(''.join(chromosome))
+    return current
+
+def fitness(chromosome, Num, Time):
+    penaltyOverlap = 0
+    penaltyConsistency = 0
+
+    for t in range(Time):
+        segment = chromosome[Time * Num: (t + 1) * Num]
+</font>        counter = segment.count('1')
+        if counter &gt; 1:
+            penaltyOverlap += (counter - 1)
+    for n in range(Num):
+        countAppearance = sum(chromosome[t * Num + n] == '1' for t in range(Time))
+        if  countAppearance != 1:
+            penaltyConsistency += abs(countAppearance - 1)
+
+    fitnessValue = -(penaltyOverlap + penaltyConsistency)
+    return fitnessValue
+
+def select_parents(current, fitnesses):
+    totalFitness = sum(fitnesses)
+    if totalFitness == 0:
+        return random.sample(current, 2)
+<a name="1"></a><font color="#00FF00"><a href="match194-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_5.gif"/></a>
+
+    probs = [f / totalFitness for f in fitnesses]
+    parents = random.choices(current, probs, c=2)
+    return parents
+
+def crossover(parent1, parent2):
+    point = random.randint(1, len(parent1) - 1)
+    offspring1 = parent1[:point] + parent2[point:]
+</font>    offspring2 = parent2[:point] + parent1[point:]
+    return offspring1, offspring2
+
+def mutation(chromosome, mutationRate = 0.01):
+    newChromosome = list(chromosome)
+    for i in range(len(newChromosome)):
+        if random.random() &lt; mutationRate:
+            newChromosome[i] = '0' if newChromosome[i] == '1' else '1'
+    return ''.join(newChromosome)
+
+def genetic_algo(Num, Time, coursename, popSize = 10, maxGeneration = 1000, mutationRate = 0.1):
+    current = generate_initial_population(popSize, Num, Time)
+    bestChromosome = None
+    bestFitness = float('-inf')
+    for generation in range(maxGeneration):
+        fitnesses = [fitness(chromo, Num, Time) for chromo in current]
+        for chromo, fit in zip(current, fitnesses):
+            if fit &gt; bestFitness:
+                bestFitness = fit
+                bestChromosome = chromo
+        if bestFitness == 0:
+            break
+        newPopulation = []
+        while len(newPopulation) &lt; popSize:
+            parent1, parent2 = select_parents(current, fitnesses)
+            offspring1, offspring2 = crossover(parent1, parent2)
+            offspring1 = mutation(offspring1, mutationRate)
+            offspring2 = mutation(offspring2, mutationRate)
+            newPopulation.extend([offspring1, offspring2])
+        current = newPopulation[:popSize]
+    return bestChromosome, bestFitness
+
+input_filename = 'Part1_input.txt'
+Num, Time, coursename = read_input(input_filename)
+bestChromosome, bestFitness = genetic_algo(Num, Time, coursename, popSize=10)
+print(bestChromosome)
+print(bestFitness)
+
+
+
+import random
+
+def select_two_parents(current):
+    return random.sample(current, 2)
+
+def two_point_crossover(parent1, parent2):
+    length = len(parent1)
+    point1 = random.randint(0, length - 2)
+    point2 = random.randint(point1 + 1, length - 1)
+
+    child1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    child2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+
+    return child1, child2
+
+current = ["000111000", "111000111", "010101010", "101010101"]
+parent1, parent2 = select_two_parents(current)
+print("Parent 1:", parent1)
+print("Parent 2:", parent2)
+
+offspring1, offspring2 = two_point_crossover(parent1, parent2)
+print("Offspring 1:", offspring1)
+print("Offspring 2:", offspring2)
+</pre>
+</body>
+</html>

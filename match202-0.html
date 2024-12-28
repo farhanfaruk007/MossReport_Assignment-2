@@ -1,0 +1,157 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/13/22201556_Anirban_Saha_CSE422_13_Lab_Assignment02_Fall2024_-_ANIRBAN_SAHA.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/13/22201556_Anirban_Saha_CSE422_13_Lab_Assignment02_Fall2024_-_ANIRBAN_SAHA.py<p></p><pre>
+import random
+#part1
+
+def population_(n, t):
+    popu = []
+    for i in range(10):
+<a name="1"></a><font color="#00FF00"><a href="match202-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_4.gif"/></a>
+
+        chromo = ""
+        for j in range(n * t):
+            chromo += random.choice(["0", "1"])
+        popu.append(chromo)
+
+    return popu
+
+
+def fitness_checker(chromo, n, t):
+</font>    overlap_p = 0
+    for i in range(t):
+        time_segment = chromo[i * n:(i + 1) * n]
+        overlap_c = time_segment.count("1")
+        if overlap_c &gt; 1:
+            overlap_p += overlap_c - 1
+
+    count_0th = 0
+    count_1st = 0
+    count_2nd = 0
+    for i in range(len(chromo)):
+        if i % n == 0:
+            if chromo[i] == "1":
+                count_0th += 1
+        if i % n == 1:
+            if chromo[i] == "1":
+                count_1st += 1
+        if i % n == 2:
+            if chromo[i] == "1":
+                count_2nd += 1
+
+    if count_0th &gt; 0:
+        count_0th -= 1
+    if count_1st &gt; 0:
+        count_1st -= 1
+    if count_2nd &gt; 0:
+        count_2nd -= 1
+    consistency_p = count_0th + count_1st + count_2nd
+
+    total = overlap_p + consistency_p
+    total = -total
+    return total
+
+
+def cross_over1(parent1, parent2):
+    p = random.randint(1, len(parent1) - 1)
+    child1 = parent1[:p] + parent2[p:]
+    child2 = parent2[:p] + parent1[p:]
+
+    return child1, child2
+
+
+def mutation(chromo, rate):
+    gene = list(chromo)
+    for i in range(len(gene)):
+        if random.random() &lt; rate:
+<a name="2"></a><font color="#0000FF"><a href="match202-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_4.gif"/></a>
+
+            if gene[i] == "1":
+                gene[i] = "0"
+            else:
+                gene[i] = "1"
+
+    return "".join(gene)
+
+
+def select_parent(population, fitness_values):
+    total_fscore = sum(fitness_values)
+</font><a name="0"></a><font color="#FF0000"><a href="match202-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_4.gif"/></a>
+
+    weight = []
+    for i in fitness_values:
+        weight.append(i/total_fscore)
+
+    new_parents = random.choices(population, weights = weight, k = 2)
+    return new_parents
+
+
+def ga(n, t, population):
+</font>    fitness_score = float("-inf")
+    optimal_solution = None
+    for g in range(20):
+        f_values = []
+        for chromo in population:
+            f_values.append(fitness_checker(chromo, n, t))
+        for i in range(len(population)):
+            if f_values[i] &gt; fitness_score:
+                fitness_score = f_values[i]
+                optimal_solution = population[i]
+
+        new_generation = []
+        while len(new_generation) &lt; 10:
+            parent1, parent2 = select_parent(population, f_values)
+            child1, child2 = cross_over1(parent1, parent2)
+            new_generation.extend([mutation(child1, 0.01), mutation(child2, 0.01)])
+
+        population = new_generation[:10]
+    return optimal_solution, fitness_score
+
+
+<a name="4"></a><font color="#FF00FF"><a href="match202-1.html#4" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_4_3.gif"/></a>
+
+inp = open("Input file.txt", "r")
+n_t = list(inp.readline().split())
+n = int(n_t[0])
+t = int(n_t[1])
+</font>initial_population = population_(n, t)
+solution, fitness_score_ = ga(n, t, initial_population)
+out = open("output file.txt", "w")
+<a name="3"></a><font color="#00FFFF"><a href="match202-1.html#3" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_3_4.gif"/></a>
+
+out.write(f"Part 1:\n{solution}\n{fitness_score_}")
+
+#part2
+
+
+def cross_over2(parent1, parent2):
+    p = random.randint(1, len(parent1) - 2)
+    q = random.randint(p+1, len(parent1) - 1)
+</font>    child1 = parent1[:p] + parent2[p:q] + parent1[q:]
+    child2 = parent2[:p] + parent1[p:q] + parent2[q:]
+
+    return child1, child2
+
+
+def two_pointer(n, t, population):
+    new_generation = []
+    while len(new_generation) &lt; 10:
+        new_parents = random.choices(population, k=2)
+        child1, child2 = cross_over2(new_parents[0], new_parents[1])
+        new_generation.append(child1)
+        new_generation.append(child2)
+    return new_generation
+
+
+tp_crossover = two_pointer(n, t, initial_population)
+print(tp_crossover)
+
+inp.close()
+out.close()
+</pre>
+</body>
+</html>

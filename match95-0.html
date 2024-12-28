@@ -1,0 +1,119 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/13/22101584_Mehrab_Muhtasim_Sayem_CSE422_13_Lab_Assignment02_Fall2024.py_-_MEHRAB_MUHTASIM_SAYEM.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/13/22101584_Mehrab_Muhtasim_Sayem_CSE422_13_Lab_Assignment02_Fall2024.py_-_MEHRAB_MUHTASIM_SAYEM.py<p></p><pre>
+import random
+import math
+with open("input.txt") as inputf, open("Output.txt", "w") as outputf:
+<a name="4"></a><font color="#FF00FF"><a href="match95-1.html#4" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_4_6.gif"/></a>
+
+    input_data = inputf.readlines()
+    course_time= input_data[0].strip().split(' ')
+    time= int(course_time[0])
+    cls_size= int(course_time[1])
+    population= {}
+    if cls_size&lt;= time:
+        for _ in range(200):
+</font>            chromosome = ''.join(str(random.randint(0, 1)) for _ in range(time * cls_size))
+            population[chromosome]= 0
+
+    def penalty_consistency(x):
+        penalty=0
+        for i in range(0, len(x), 3):
+            consis_num= sum(1 for j in range(i,i+3) if x[j]=='1')
+            if consis_num &gt; 0:
+                penalty += (consis_num-1)
+        return penalty
+    def penalty_overlap(x):
+        penalty= 0
+        for i in range(0, len(x)//time):
+            overlap_num = sum(1 for j in range(i, len(x), 3) if x[j] == '1')
+<a name="3"></a><font color="#00FFFF"><a href="match95-1.html#3" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_3_7.gif"/></a>
+
+            if overlap_num &gt; 0:
+                penalty += (overlap_num-1)
+        return penalty
+    fitness = []
+    def compute_fitness(x):
+        penalty = -(penalty_overlap(x) + penalty_consistency(x))
+        fitness.append((x, penalty))
+        return penalty
+
+    def crossover(parent_1, parent_2):
+        middle= len(parent_1) // 2
+</font><a name="1"></a><font color="#00FF00"><a href="match95-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_12.gif"/></a>
+
+        offspring_1= parent_1[:middle] + parent_2[middle:]
+        offspring_2= parent_1[middle:] + parent_2[:middle]
+        population[offspring_1]= 0
+        population[offspring_2]= 0
+        return offspring_1, offspring_2
+
+    def mutation(x):
+        x_list= list(x)
+        mutation_index= random.randint(0, len(x_list) - 1)
+        x_list[mutation_index]= str(1-int(x_list[mutation_index]))
+</font>        return ''.join(x_list)
+
+<a name="2"></a><font color="#0000FF"><a href="match95-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_9.gif"/></a>
+
+    def genetic_alo(parent_1, parent_2,left):
+        offspring_1, offspring_2 = crossover(parent_1, parent_2)
+        if compute_fitness(offspring_1)== 0:
+            return offspring_1
+        elif compute_fitness(offspring_2)== 0:
+            return offspring_2
+        else:
+            left-=1
+            if left==0:
+                return "000000000"
+            offspring_1 = mutation(offspring_1)
+            offspring_2 = mutation(offspring_2)
+            return genetic_alo(offspring_1, offspring_2, left)
+# parent selection
+    parent_1 = random.choice(list(population.keys()))
+</font>    parent_2 = random.choice(list(population.keys()))
+<a name="5"></a><font color="#FF0000"><a href="match95-1.html#5" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_6.gif"/></a>
+
+    result = genetic_alo(parent_1, parent_2, 1000)
+    if result in ["000000000", "111111111"]:
+        print('not accepted', file=outputf)
+    else:
+        print(result, file=outputf)
+        for s, fit in fitness:
+            if s == result:
+                print(fit, file=outputf)
+</font>
+# Task 1 output will be printed in output.txt file
+#Task 2 output will be printed in the terminal
+
+# Task 2
+def twopoint_cross(p1, p2):
+    length= len(p1)
+    point1= random.randint(1, length-2)
+    point2= random.randint(point1+1, length-1)
+    offspring_1= p1[:point1] + p2[point1:point2] + p1[point2:]
+<a name="0"></a><font color="#FF0000"><a href="match95-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_16.gif"/></a>
+
+    offspring_2= p2[:point1] + p1[point1:point2] + p2[point2:]
+    return offspring_1, offspring_2
+
+population= {}
+time_length = 9  
+class_length = 1 
+for _ in range(201):
+    chromosome = ''.join(str(random.randint(0, 1)) for _ in range(time_length * class_length))
+    population[chromosome] = 0
+
+p1 = random.choice(list(population.keys()))
+p2 = random.choice(list(population.keys()))
+offspring1, offspring2 = twopoint_cross(p1, p2)
+print("Parent 1:", p1)
+print("Parent 2:", p2)
+print("Offspring 1:", offspring1)
+</font>print("Offspring 2:", offspring2)</pre>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/18/21201705_mazharul_islam_cse422_18_assignment02_fall2024_-_MAZHARUL_ISLAM.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/18/21201820_siffat_ara_easha_cse422_18_assignment02_fall2024_-_SIFFAT_ARA_EASHA.py<p></p><pre>
+
+#part_1
+<a name="1"></a><font color="#00FF00"><a href="match178-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_10.gif"/></a>
+
+import random
+
+
+def read_input(filename):
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+    N, T = map(int, lines[0].split())
+    courses = [line.strip() for line in lines[1:]]
+    return N, T, courses
+
+
+def calculate_fitness(chromosome, N, T):
+    overlap_penalty = 0
+</font>    consistency_penalty = 0
+    timeslots = [chromosome[i * N:(i + 1) * N] for i in range(T)]
+    for s in timeslots:
+        overlap_penalty += max(0, sum(s) - 1)
+    course_counts = [sum(chromosome[i::N]) for i in range(N)]
+    consistency_penalty += sum(abs(count - 1) for count in course_counts)
+    return -(overlap_penalty + consistency_penalty)
+
+
+def cross_over(parent1, parent2):
+    point = random.randint(1, len(parent1) - 1)
+    return parent1[:point] + parent2[point:], parent2[:point] + parent1[point:]
+
+
+def mutation(chromosome, rate):
+    return [1 - bit if random.random() &lt; rate else bit for bit in chromosome]
+
+
+def genetic_algorithm(N, T, population_size=100, generations=1000, mutation_rate=1):
+    population = [[random.randint(0, 1) for p in range(N * T)] for p in range(population_size)]
+    best_chromosome, best_fitness = None, float('-inf')
+    for p in range(generations):
+        fitness_scores = [(chrom, calculate_fitness(chrom, N, T)) for chrom in population]
+        best_chromosome, best_fitness = max(fitness_scores, key=lambda x: x[1], default=(best_chromosome, best_fitness))
+        selected = random.choices(population, k=population_size)
+        offspring = []
+        for i in range(0, population_size, 2):
+            p1, p2 = selected[i], selected[i + 1]
+            child1, child2 = cross_over(p1, p2)
+            offspring.extend([mutation(child1, mutation_rate), mutation(child2, mutation_rate)])
+        population = offspring
+    return best_chromosome, best_fitness
+
+
+<a name="2"></a><font color="#0000FF"><a href="match178-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_7.gif"/></a>
+
+if __name__ == "__main__":
+    N, T, _ = read_input('input1a.txt')
+    best_chromosome, best_fitness = genetic_algorithm(N, T)
+    print("Best Chromosome:", ''.join(map(str, best_chromosome)))
+    print("Fitness Value:", best_fitness)
+
+
+
+
+
+#part_2
+
+import random
+
+
+def t_p_cross_over(parent1, parent2):
+
+    length = len(parent1)
+</font>    p1, p2 = sorted(random.sample(range(1, length), 2))
+
+    child1 = parent1[:p1] + parent2[p1:p2] + parent1[p2:]
+<a name="0"></a><font color="#FF0000"><a href="match178-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_17.gif"/></a>
+
+    child2 = parent2[:p1] + parent1[p1:p2] + parent2[p2:]
+
+    return child1, child2, p1, p2
+
+if __name__ == "__main__":
+
+    parent1 = [0, 0, 0, 1, 1, 1, 0, 0, 0]
+    parent2 = [1, 1, 1, 0, 0, 0, 1, 1, 1]
+
+
+    child1, child2, p1, p2 = t_p_cross_over(parent1, parent2)
+
+
+    print("Parent 1:", ''.join(map(str, parent1)))
+    print("Parent 2:", ''.join(map(str, parent2)))
+    print(f"Chosen points: {p1}, {p2}")
+    print("Child 1 :", ''.join(map(str, child1)))
+</font>    print("Child 2 :", ''.join(map(str, child2)))</pre>
+</body>
+</html>

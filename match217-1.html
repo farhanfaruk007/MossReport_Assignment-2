@@ -1,0 +1,120 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/3/22101239_nishat_tasnim_cse422_03_lab_assignment02_fall2024_-_NISHAT_TASNIM.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/13/22101779_Sanzida_Ahmed_Aroni_CSE422_13_Assignment02_-_SANZIDA_AHMED_ARONI.py<p></p><pre>
+import random
+
+f = open("/input.txt", "r")
+n, t = map(int, f.readline().split())
+arr = []
+for _ in range(n):
+    arr.append(f.readline().strip())
+
+
+def fitcheck(chromos, n, t, arr):
+    overlap_penalty = 0
+    consistency_penalty = 0
+    
+    for i in range(t):
+        timeslot = chromos[i * n:(i + 1) * n]
+        num_courses_scheduled = 0
+        for course in timeslot:
+            if course == '1':
+                num_courses_scheduled += 1
+<a name="0"></a><font color="#FF0000"><a href="match217-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_11.gif"/></a>
+
+        if num_courses_scheduled &gt; 1:
+            overlap_penalty += (num_courses_scheduled - 1)
+    
+
+    for j in range(n):
+        num_times_scheduled = 0
+        for i in range(t):
+            if chromos[i * n + j] == '1':
+                num_times_scheduled += 1
+        if num_times_scheduled != 1:
+            consistency_penalty += abs(num_times_scheduled - 1)
+</font>    
+    total_penalty = overlap_penalty + consistency_penalty
+    fitness = -total_penalty
+    return fitness
+
+
+def generate_random_chromosome(n, t):
+    chromo = ''
+    for _ in range(n * t):
+        chromo += random.choice('01')
+    return chromo
+
+
+def select_parents(population):
+    return random.sample(population, 2)
+
+
+def single_point_crossover(parent1, parent2):
+    point = random.randint(1, len(parent1) - 1)
+    child1 = parent1[:point] + parent2[point:]
+    child2 = parent2[:point] + parent1[:point] + parent1[point:]
+    return child1, child2
+
+
+def mutate(chromosome, mutation_rate=0.01):
+    mutated = ''
+    for char in chromosome:
+        if random.random() &gt; mutation_rate:
+            mutated += char
+        else:
+            mutated += '1' if char == '0' else '0'
+    return mutated
+
+
+def generate_population(size, n, t):
+    population = []
+    for _ in range(size):
+        population.append(generate_random_chromosome(n, t))
+    return population
+
+
+<a name="2"></a><font color="#0000FF"><a href="match217-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_7.gif"/></a>
+
+def genetic_algorithm(n, t, arr, population_size=100, max_iterations=1000, mutation_rate=0.01):
+    population = generate_population(population_size, n, t)
+    best_chromosome = None
+    best_fitness = float('-inf')
+    
+    for iteration in range(max_iterations):
+        population.sort(key=lambda chromo: fitcheck(chromo, n, t, arr), reverse=True)
+</font>        
+        if fitcheck(population[0], n, t, arr) &gt; best_fitness:
+            best_chromosome = population[0]
+            best_fitness = fitcheck(population[0], n, t, arr)
+        
+        if best_fitness == 0:
+            break
+        
+        new_population = []
+        for i in range(population_size // 2):
+<a name="1"></a><font color="#00FF00"><a href="match217-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_8.gif"/></a>
+
+            new_population.append(population[i])
+        
+        while len(new_population) &lt; population_size:
+            parent1, parent2 = select_parents(population)
+            child1, child2 = single_point_crossover(parent1, parent2)
+            new_population.append(mutate(child1, mutation_rate))
+            new_population.append(mutate(child2, mutation_rate))
+        
+        population = new_population
+    
+    return best_chromosome, best_fitness
+
+best_chromosome, best_fitness = genetic_algorithm(n, t, arr)
+</font>print( best_chromosome)
+print( best_fitness)
+
+</pre>
+</body>
+</html>

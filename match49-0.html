@@ -1,0 +1,210 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/13/23241050_FarihaBinteAbdullah_CSE422_13_Lab_Assignment02_Fall2024.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/13/23241050_FarihaBinteAbdullah_CSE422_13_Lab_Assignment02_Fall2024.py<p></p><pre>
+
+from random import shuffle, randint
+from heapq import heappush, nlargest, heapify
+
+input1=open('input1.txt','r')
+def read_file(file):
+<a name="7"></a><font color="#0000FF"><a href="match49-1.html#7" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_4.gif"/></a>
+
+    text_lines = file.readlines()
+    file.close()
+
+    temp_list = text_lines[0].split(" ")
+    N = temp_list[0]
+    T = temp_list[1]
+    
+
+    return int(N), int(T)
+</font>
+#PART1
+<a name="5"></a><font color="#FF0000"><a href="match49-1.html#5" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_5.gif"/></a>
+
+def population(len_arr, string_size):
+    initial = []
+
+    for i in range(string_size):
+        temp = ""
+        for j in range(len_arr):
+            temp = temp + str(randint(0, 1))
+        initial.append(temp)
+
+
+    return initial
+
+</font><a name="0"></a><font color="#FF0000"><a href="match49-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_23.gif"/></a>
+
+def overlap_penalty(string, T):
+    chromosome_length = len(string)
+    overlaps = 0
+
+    start = 0
+    for i in range(T, chromosome_length + 1, T):
+        count = 0
+
+        temp = string[start:i]
+        for j in temp:
+            if j == "1":
+                count += 1
+        
+        if count &gt; 1:
+            count -= 1
+        else:
+            count = 0
+        
+        overlaps += count
+
+        start += T
+    
+    return overlaps
+
+
+def consistency_penalty(string,T):
+    courses_list = {}    
+    chromosome_length = len(string)
+    for i in range(T):
+        courses_list[i] = 0
+    
+    start = 0
+    for i in range(T, chromosome_length + 1, T):
+        temp = string[start:i]
+        
+        for j in courses_list:
+            if temp[j] == "1":
+                courses_list[j] = courses_list[j] + 1
+
+        start += T
+
+    consistency_error= 0
+    for k in courses_list:
+        consistency_error = consistency_error + abs(courses_list[k] - 1)
+    
+    return consistency_error
+
+
+def fitness_calc(string, T):
+</font>    return -1 * (consistency_penalty(string, T) + overlap_penalty(string, T))
+
+
+def crossover(A, B):
+    length_of_chromosome = len(A)
+    index = length_of_chromosome - 1
+
+    crossover_point = randint(1, index - 1)
+
+    child1 = A[:crossover_point] + B[crossover_point:]
+    child2 = B[:crossover_point] + A[crossover_point:]
+
+<a name="6"></a><font color="#00FF00"><a href="match49-1.html#6" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_4.gif"/></a>
+
+    return child1,child2 
+
+def swapchromosomes(selected):
+    temp = selected[:]
+    for i in temp:
+        i[0], i[1] = i[1], i[0]
+    
+    return temp
+
+
+def mutation(string):
+</font><a name="2"></a><font color="#0000FF"><a href="match49-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_5.gif"/></a>
+
+    length= len(string)
+    index = randint(0, length - 1)
+    mutation_point = randint(0, 1)
+    return string[:index] + str(mutation_point) + string[index+1:] 
+
+
+
+def complete(genetic_algorithm, T):
+    temp_list = genetic_algorithm[:]
+</font>    shuffle(temp_list) 
+    children = []
+    
+<a name="3"></a><font color="#00FFFF"><a href="match49-1.html#3" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_3_5.gif"/></a>
+
+    for i in range(0, len(genetic_algorithm)-1, 2):
+        child_a, child_b = crossover(temp_list[i], temp_list[i + 1])
+        child_a, child_b = mutation(temp_list[i]), mutation(temp_list[i + 1])
+        children += [child_a, child_b]
+
+    chosen_one =  children
+</font>
+    queue = []
+    for i in chosen_one:
+        heappush(queue, [fitness_calc(i, T), i])
+    
+    return queue
+
+
+def genetic_algorithm(N, T):
+    fitness=-9999
+    selection = population(N * T, 10)
+    iteration = 0
+    while fitness!=0:
+<a name="4"></a><font color="#FF00FF"><a href="match49-1.html#4" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_4_5.gif"/></a>
+
+        queue = complete(selection, T)
+        fitness = nlargest(1, queue)[0][0]
+        new_population = []
+        temp_population = nlargest(10, queue)
+
+        for i in temp_population:
+            if i[1] not in new_population:
+                new_population.append(i[1])
+</font>        
+        selection = new_population
+
+
+        iteration += 1
+ 
+        if iteration &gt; 9999:
+            break
+    selected = nlargest(10, queue)
+    new_schedule=swapchromosomes(selected)
+    print("PART1")
+    print(iteration)
+
+    if iteration &gt; 100000:
+        return new_schedule[0][0]
+    else:
+        return new_schedule[0][0]
+
+
+
+N,T=read_file(input1)
+selected_population=population(N,T)
+result=genetic_algorithm(N, T)
+print(result)
+
+
+
+#PART2
+
+<a name="1"></a><font color="#00FF00"><a href="match49-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_6.gif"/></a>
+
+def two_point_crossover(chromosomeA, chromosomeB):
+    length = len(chromosomeA)
+    index = length - 1
+
+    split1 = randint(1, index - 2)
+    split2 = randint(split1 + 1, index - 1)
+
+    A_new = chromosomeA[:split1] + chromosomeB[split1:split2] + chromosomeA[split2:]
+</font>    B_new = chromosomeB[:split1] + chromosomeA[split1:split2] + chromosomeB[split2:]
+    return A_new, B_new
+parent=population(N*T, 2)
+children=two_point_crossover(parent[0], parent[1])
+print()
+print("PART2")
+for i in children:
+    print(i)</pre>
+</body>
+</html>

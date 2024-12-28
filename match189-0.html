@@ -1,0 +1,119 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/8/22299036_Tanmoy_Saha_S08_-_TANMOY_SAHA.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/8/22299036_Tanmoy_Saha_S08_-_TANMOY_SAHA.py<p></p><pre>
+import random
+#import time
+#start=time.time()
+
+#Part 1
+<a name="0"></a><font color="#FF0000"><a href="match189-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_15.gif"/></a>
+
+def fitnesscalculator(chromosome, N, T):
+    over_pen = 0
+    cons_pen= 0
+    for t in range(T):  # Overlap penalty
+        crsin_time = sum(int(chromosome[t * N + i]) for i in range(N))
+        if crsin_time &gt; 1:
+            over_pen += crsin_time - 1
+    for c in range(N):  # Consistency penalty
+        timecrs_sch = sum(int(chromosome[i * N + c]) for i in range(T))
+        cons_pen+= abs(timecrs_sch - 1)
+
+    return -(over_pen + cons_pen)
+
+#create initial random population 
+def create_randm_population(popsize, chromosome_len):
+</font>    return [''.join(str(random.randint(0,1)) for _ in range(chromosome_len)) for _  in range(popsize)]
+
+#select parents
+def parentselection(population):
+    return random.sample(population, 2)
+
+def mutation(chromosome, mutationrate=0.01):
+    chromosome_lst=list(chromosome)
+    for i in range(len(chromosome_lst)):
+        if random.random() &lt; mutationrate:
+            chromosome_lst[i] = "1" if chromosome_lst[i] =="0"  else "0"
+    return ''.join(chromosome_lst)
+
+def single_pcrossover(parent1,parent2):
+    point=random.randint(1,len(parent1)-1)
+    offs1=parent1[:point]+parent2[point:]
+    offs2=  parent2[:point]+parent1[point:]
+    return offs1,offs2
+                                                                                 
+ #prnt1="000111000"                                     #Tried to implement this within this function 
+ #prnt2="111000111"                                      # Just passing 2 parents to this function which will do the 2 Point crossover
+def two_pcrossover(parent1,parent2):   #Solely modified for part 2 as it's not a part of main Genetic Algorithm  
+    point1=random.randint(1,len(parent1)-2)
+    point2= random.randint(point1+1,len(parent1)-1)
+    #point1=3
+    #point2=7
+    offs1=parent1[:point1]+parent2[point1:point2]+parent1[point2:]
+    offs2=parent2[:point1]+parent1[point1:point2]+parent2[point2:]
+    print()
+    print("Part 2")
+    print("Parent 1:",parent1)
+    print("Parent 2:",parent2)
+    print(f"Randomly Choosen Point: {point1} &amp; {point2} ")
+    print("Offspring 1:",offs1)
+    print("Offspring 2:",offs2)
+
+    return offs1,offs2
+
+
+#Main Genetic Algorithm
+
+def genetic_algorithm(N, T, popsize=10, maxgen=100000,  mutationrate=0.01, goalchromosome=None):
+    population=create_randm_population(popsize, N*T)
+    chromosomelen=N*T
+    for gen in range(maxgen):
+        nextgen=[]
+        for _ in range(popsize//2):
+            parent1,parent2=parentselection(population)
+<a name="1"></a><font color="#00FF00"><a href="match189-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_14.gif"/></a>
+
+            ofs1,ofs2=single_pcrossover(parent1,parent2)
+            mut_ofs1=mutation(ofs1,mutationrate)
+            mut_ofs2=mutation(ofs2,mutationrate)
+            nextgen.extend([mut_ofs1,mut_ofs2])
+        
+        population=sorted(nextgen,key=lambda x: fitnesscalculator(x,N, T), reverse=True)[:popsize]
+        if goalchromosome and goalchromosome in population:
+            return goalchromosome, fitnesscalculator(goalchromosome, N, T)
+    bestchromosome=max(population,key=lambda x : fitnesscalculator(x,N,T))
+    return bestchromosome, fitnesscalculator(bestchromosome,N,T)
+
+
+#main Function
+def main():
+</font>    inputfile="input.txt"       #This part is for input file processing 
+    with open(inputfile,"r") as f:                   
+        N,T = map(int, f.readline().split())    #Read and stored the value of N and T 
+        courses=[f.readline().strip() for _ in range(N)]  #To be sdheduled courses   
+    print("Part 1")
+    print(f"Number Of courses: {N} ")
+    print(f"Number Of Timeslots: {T} ")
+    print(f"Courses: {courses} ")
+
+    goalchromosome='110110010'
+    
+    bestchromosome,fitness=genetic_algorithm(N,T,goalchromosome=goalchromosome)
+    print("Best Chromosome",bestchromosome)
+    print("Fitness Value: ", fitness)
+
+    #Part 2
+    prnt1="000111000"      #Passing 2 random parents for 2 point crossover 
+    prnt2="111000111"   
+    offs1,offs2=two_pcrossover(prnt1,prnt2)
+    
+if __name__=="__main__":
+    main()    
+#end=time.time()
+#print(end-start)</pre>
+</body>
+</html>

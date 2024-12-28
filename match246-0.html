@@ -1,0 +1,137 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/17/22101862_Trisheeta_CSE422_17_Assignment02_Fall2024_-_TRISHEETA_JAHAN_AZAD.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/17/22101862_Trisheeta_CSE422_17_Assignment02_Fall2024_-_TRISHEETA_JAHAN_AZAD.py<p></p><pre>
+import random
+
+# Part 1:
+def calculate_fitness(chromosome, N, T):
+    overlap_penalty = 0
+    consistency_penalty = 0
+    schedule_matrix = []
+
+    for t in range(T):
+        schedule_matrix.append(chromosome[t * N:(t + 1) * N])
+
+    for timeslot in schedule_matrix:
+        overlap = sum(timeslot) - 1
+        if overlap &gt; 0:
+            overlap_penalty += overlap
+
+    course_counts = [sum(schedule_matrix[t][n] for t in range(T)) for n in range(N)]
+    for count in course_counts:
+        if count != 1:
+            consistency_penalty += abs(count - 1)
+
+    total_penalty = overlap_penalty + consistency_penalty
+    return -total_penalty
+
+def select_parents(population, fitnesses):
+    total_fitness = sum(fitnesses)
+<a name="0"></a><font color="#FF0000"><a href="match246-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_8.gif"/></a>
+
+    probabilities = [f / total_fitness for f in fitnesses]
+    parent1 = population[random.choices(range(len(population)), probabilities)[0]]
+    parent2 = population[random.choices(range(len(population)), probabilities)[0]]
+    return parent1, parent2
+
+def crossover(parent1, parent2):
+    point = random.randint(1, len(parent1) - 2)
+</font>    child1 = parent1[:point] + parent2[point:]
+    child2 = parent2[:point] + parent1[point:]
+    return child1, child2
+
+def mutate(chromosome, mutation_rate=0.01):
+    for i in range(len(chromosome)):
+        if random.random() &lt; mutation_rate:
+            chromosome[i] = 1 - chromosome[i]
+    return chromosome
+
+def genetic_algorithm(N, T, course_codes, max_generations=100, population_size=10):
+    population = [[random.randint(0, 1) for _ in range(N * T)] for _ in range(population_size)]
+
+    best_chromosome = None
+    best_fitness = float('-inf')
+
+    for generation in range(max_generations):
+        fitnesses = [calculate_fitness(chromosome, N, T) for chromosome in population]
+
+        for i, fitness in enumerate(fitnesses):
+            if fitness &gt; best_fitness:
+                best_fitness = fitness
+                best_chromosome = population[i]
+
+        new_population = []
+        while len(new_population) &lt; population_size:
+            parent1, parent2 = select_parents(population, fitnesses)
+            child1, child2 = crossover(parent1, parent2)
+            new_population.append(mutate(child1))
+            new_population.append(mutate(child2))
+
+        population = new_population[:population_size]
+
+    return best_chromosome, best_fitness
+
+# Part 2: Two-point Crossover Function
+def two_point_crossover(parent1, parent2):
+    assert len(parent1) == len(parent2), "Parents must have the same length"
+    point1 = random.randint(1, len(parent1) - 2)
+    point2 = random.randint(point1 + 1, len(parent1) - 1)
+    child1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    child2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+    return child1, child2, point1, point2
+
+# Part 1 Execution
+def execute_part1():
+    print("Running Part 1: Genetic Algorithm")
+<a name="1"></a><font color="#00FF00"><a href="match246-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_5.gif"/></a>
+
+    N, T = map(int, input("Enter N (number of courses) and T (number of timeslots): ").split())
+    course_codes = [input(f"Enter course code for course {i + 1}: ") for i in range(N)]
+    best_chromosome, best_fitness = genetic_algorithm(N, T, course_codes)
+    print("Best Chromosome:", "".join(map(str, best_chromosome)))
+    print("Best Fitness:", best_fitness)
+</font>
+# Part 2 Execution
+def execute_part2():
+    print("\nRunning Part 2: Two-point Crossover")
+    population = [
+        [0, 0, 0, 1, 1, 1, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 1, 1, 1],
+<a name="2"></a><font color="#0000FF"><a href="match246-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_4.gif"/></a>
+
+        [0, 1, 0, 1, 0, 1, 0, 1, 0],
+        [1, 0, 1, 0, 1, 0, 1, 0, 1]
+    ]
+    parent1 = random.choice(population)
+    parent2 = random.choice(population)
+</font>    while parent1 == parent2:
+        parent2 = random.choice(population)
+    child1, child2, point1, point2 = two_point_crossover(parent1, parent2)
+    print(f"Parent 1: {''.join(map(str, parent1))}")
+    print(f"Parent 2: {''.join(map(str, parent2))}")
+    print(f"Two-point crossover at indices: {point1} and {point2}")
+    print(f"Child 1:  {''.join(map(str, child1))}")
+    print(f"Child 2:  {''.join(map(str, child2))}")
+
+def main():
+    print("Choose which part to run:")
+    print("1. Part 1: Genetic Algorithm")
+    print("2. Part 2: Two-point Crossover")
+    choice = int(input("Enter your choice (1 or 2): "))
+    
+    if choice == 1:
+        execute_part1()
+    elif choice == 2:
+        execute_part2()
+    else:
+        print("Invalid choice. Please run the program again.")
+
+if __name__ == "__main__":
+    main()
+</pre>
+</body>
+</html>

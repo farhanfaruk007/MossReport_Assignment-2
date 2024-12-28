@@ -1,0 +1,166 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/13/22101509_Srizee_cse422_sec13_-_MAISA_TARANNUM_SRIZEE.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/13/22101866_Rafid_CSE422_13_Lab_Assignment02_Fall2024_-_MD._RAFID_KHAN.py<p></p><pre>
+import random
+
+def calculate_fitness(chromosome, N, T):
+    penalty_overlap = 0
+    penalty_consistency = 0
+    
+    for t in range(T):
+<a name="0"></a><font color="#FF0000"><a href="match86-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_17.gif"/></a>
+
+        segment = chromosome[t*N:(t+1)*N]
+        num_courses = segment.count('1')
+        if num_courses &gt; 1:
+            penalty_overlap += (num_courses - 1)
+
+    course_counts = [0] * N
+    for t in range(T):
+        segment = chromosome[t*N:(t+1)*N]
+        for i in range(N):
+            if segment[i] == '1':
+                course_counts[i] += 1
+    
+    for count in course_counts:
+        if count != 1:
+            penalty_consistency += abs(count - 1)
+    
+    total_penalty = penalty_overlap + penalty_consistency
+    fitness = -total_penalty
+    
+    return fitness
+def generate_population(pop_size, N, T):
+</font><a name="3"></a><font color="#00FFFF"><a href="match86-0.html#3" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_3_7.gif"/></a>
+
+    population = []
+    for m in range(pop_size):
+        chromosome = ''
+        for m in range(N * T):
+            gene = random.choice('01')
+            chromosome += gene
+        population.append(chromosome)
+    
+    return population
+
+def select_parents(population, fitnesses):
+</font>    total_fitness = sum(fitnesses)
+<a name="5"></a><font color="#FF0000"><a href="match86-0.html#5" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_6.gif"/></a>
+
+    probabilities = [f / total_fitness for f in fitnesses]
+    parents = random.choices(population, probabilities, k=2)
+    return parents
+
+def single_point_crossover(parent1, parent2):
+  
+    point = random.randint(1, len(parent1) - 1)
+    offspring1 = parent1[:point] + parent2[point:]
+</font>    offspring2 = parent2[:point] + parent1[point:]
+    return offspring1, offspring2
+
+def two_point_crossover(parent1, parent2):
+    point1 = random.randint(1, len(parent1) - 2)
+
+    point2 = random.randint(point1 + 1, len(parent1) - 1)
+    offspring1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+<a name="2"></a><font color="#0000FF"><a href="match86-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_8.gif"/></a>
+
+    offspring2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+
+
+    # parent1 = random.choice(generate_population(1, N, T))
+    # parent2 = random.choice(generate_population(1, N, T))
+    # offspring1, offspring2 = two_point_crossover(parent1, parent2)
+
+    # print(f"Parent 1: {parent1}")
+    # print(f"Parent 2: {parent2}")
+    # print(f"Offspring 1: {offspring1}")
+    # print(f"Offspring 2: {offspring2}")
+
+    return offspring1, offspring2
+
+def mutate(chromosome, mutation_rate):
+    mutated_chromosome = ""
+    
+    for bit in chromosome:
+        random_number = random.random()
+        
+        if random_number &gt; mutation_rate:
+            mutated_chromosome += bit
+        else:
+            mutated_chromosome += '1' if bit == '0' else '0'
+    
+    return mutated_chromosome
+
+def genetic_algorithm(N, T, pop_size, max_iterations, mutation_rate):
+</font>    population = generate_population(pop_size, N, T)
+    for iteration in range(max_iterations):
+
+        fitnesses = []
+
+        for chromosome in population:
+            fitness = calculate_fitness(chromosome, N, T)
+<a name="1"></a><font color="#00FF00"><a href="match86-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_13.gif"/></a>
+
+            fitnesses.append(fitness)
+
+        new_population = []
+        for _ in range(pop_size // 2):
+            parent1, parent2 = select_parents(population, fitnesses)
+            offspring1, offspring2 = single_point_crossover(parent1, parent2)
+            offspring1 = mutate(offspring1, mutation_rate)
+            offspring2 = mutate(offspring2, mutation_rate)
+            new_population.extend([offspring1, offspring2])
+        population = new_population
+    
+    best_chromosome = None
+    best_fitness = float('-inf')
+
+    for chromosome in population:
+        fitness = calculate_fitness(chromosome, N, T)
+        if fitness &gt; best_fitness:
+            best_fitness = fitness
+            best_chromosome = chromosome
+
+    
+    return best_chromosome, best_fitness
+</font>
+
+
+#Part 1
+def main():
+    N, T = map(int, input().split())
+<a name="6"></a><font color="#00FF00"><a href="match86-0.html#6" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_4.gif"/></a>
+
+    course_codes = [input().strip() for _ in range(N)]
+    
+    pop_size = 100
+    max_iterations = 100
+    mutation_rate = 0.01
+
+    best_schedule, best_fitness = genetic_algorithm(N, T, pop_size, max_iterations, mutation_rate)
+    print(best_schedule)
+</font>    print(best_fitness)
+
+
+#Part2    
+<a name="4"></a><font color="#FF00FF"><a href="match86-0.html#4" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_4_6.gif"/></a>
+
+    parent1 = random.choice(generate_population(1, N, T))
+    parent2 = random.choice(generate_population(1, N, T))
+    offspring1, offspring2 = two_point_crossover(parent1, parent2)
+    print("Part_2")
+    print(f"Parent 1: {parent1}")
+    print(f"Parent 2: {parent2}")
+    print(f"Offspring 1: {offspring1}")
+    print(f"Offspring 2: {offspring2}")
+
+if __name__ == "__main__":
+</font>    main()
+    </pre>
+</body>
+</html>

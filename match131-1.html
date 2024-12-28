@@ -1,0 +1,104 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/7/22101118_tanzim_hossain_safin_cse422_07_assignment02_fall2024_-_TANZIM_HOSSAIN_SAFIN.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/16/21201822_cse422_16_labassignment2_-_MD._HABIBUR_RAHMAN.py<p></p><pre>
+#PART-1
+import random
+
+def initialize_population(pop_size, N, T):
+    population = []
+    for i in range(pop_size):
+        chromosome = []
+<a name="0"></a><font color="#FF0000"><a href="match131-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_20.gif"/></a>
+
+        for i in range(N):
+            timeslot = [0] * T
+            timeslot[random.randint(0, T - 1)] = 1
+            chromosome.extend(timeslot)
+        population.append(chromosome)
+    return population
+
+def fitness_calculation(chromosome, N, T):
+    overlapPenalty = 0
+    consistPenalty = 0
+
+    schedule = [chromosome[i*T:(i+1)*T] for i in range(N)]
+
+    for t in range(T):
+        coure_in_same_time = sum(schedule[i][t] for i in range(N))
+        if coure_in_same_time &gt; 1:
+            overlapPenalty += (coure_in_same_time - 1)
+</font>
+    consistPenalty = sum( abs(sum(schedule[i]) - 1) for i in range(N) )
+
+    fitness = -(overlapPenalty + consistPenalty)
+    return fitness
+
+def parent_choosing(population, fitness_values):
+    total_fitness = sum(fitness_values)
+    probabi = [f / total_fitness for f in fitness_values]
+    parents = random.choices(population, weights=probabi, k=2)
+    return parents
+
+def crossover(parent1, parent2):
+    point = random.randint(1, len(parent1) - 1)
+    child1 = parent1[:point] + parent2[point:]
+    child2 = parent2[:point] + parent1[point:]
+    return child1, child2
+
+def mutate(chromosome, mut_rate):
+    for i in range(len(chromosome)):
+        if random.random() &lt; mut_rate:
+            chromosome[i] = 1 - chromosome[i]
+<a name="1"></a><font color="#00FF00"><a href="match131-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_19.gif"/></a>
+
+    return chromosome
+
+def GeneAlgo(N, T,courses, pop_size=50, max_gen=100, mut_probability=0.02):
+    population = initialize_population(pop_size, N, T)
+    for gen in range(max_gen):
+        fit_score = [fitness_calculation(individual, N, T) for individual in population]
+
+        if 0 in fit_score:
+            break
+
+        next_gen = []
+        while len(next_gen) &lt; pop_size:
+            parent_a, parent_b = parent_choosing(population, fit_score)
+            offspring_a, offspring_b = crossover(parent_a, parent_b)
+            next_gen.append(mutate(offspring_a, mut_probability))
+            next_gen.append(mutate(offspring_b, mut_probability))
+
+        population = next_gen[:pop_size]
+    max_value= max(fit_score)
+</font>    best_index = fit_score.index(max_value)
+    print(f"{population[best_index]} \nFitness Score : {fit_score[best_index]}")
+
+N = 3
+<a name="2"></a><font color="#0000FF"><a href="match131-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_13.gif"/></a>
+
+T = 3
+courses = ["CSE110", "MAT110", "PHY112"]
+
+GeneAlgo(N, T ,courses)
+
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------#
+
+#PART-2
+
+par1 = [0, 0, 1, 0, 1, 1, 0, 1, 0]
+par2 = [1, 1, 0, 1, 0, 0, 1, 0, 1]
+
+p1 = random.randint(1, len(par1) - 3)
+p2 = random.randint(p1 + 1, len(par1) - 1)
+
+child1 = par1[:p1] + par2[p1:p2] + par1[p2:]
+</font>child2 = par2[:p1] + par1[p1:p2] + par2[p2:]
+
+print(f"Point 1: {p1}, Point 2: {p2}")
+print(f"Child 1: {child1} \nChild 2: {child2}")</pre>
+</body>
+</html>

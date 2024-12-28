@@ -1,0 +1,159 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/12/22301673_Md_Jahangir_Alam_CSE422_12_Assignment02_Fall2024.py_-_MD._JAHANGIR_ALAM(1).py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/12/22301673_Md_Jahangir_Alam_CSE422_12_Assignment02_Fall2024.py_-_MD._JAHANGIR_ALAM(1).py<p></p><pre>
+#Random selection
+
+<a name="0"></a><font color="#FF0000"><a href="match36-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_98.gif"/></a>
+
+import random
+
+def pop(input_file):
+
+
+  input=[]
+  for i in input_file:
+    input.append(i.split())
+
+  le=int(input[0][0])*int(input[0][1])
+
+
+  st=""
+
+  for i in range(le):
+    temp=str(random.randint(0,1))
+    st+=temp
+
+
+  return st
+
+p1=pop(open("input.txt","r"))
+p2=pop(open("input.txt","r"))
+
+print(p1)
+print(p2)
+
+#Two parents selection
+
+p1=pop(open("input.txt","r"))
+p2=pop(open("input.txt","r"))
+print(p1)
+print(p2)
+
+
+#Genetic Algo
+
+def GA(p1,p2,c=0):
+  if c==100:
+    print('After GA new Chromosomes will be')
+    print('first chrmosome',p1)
+    print('second chromosome',p2)
+
+    #Fitness function
+
+    def fitness(slot1):
+      slot=[]
+
+      for i in range(0,len(slot1),3):
+        slot.append((slot1[i:i+3]))
+
+
+      overP=0
+
+      for i in slot:
+        c=0
+        for j in i:
+          if j=="1":
+            c+=1
+        overP+=(c-1)
+
+
+      consisP=0
+
+      for i in range(len(slot)):
+        c=int(slot[0][i])+int(slot[1][i])+int(slot[2][i])
+        consisP+=abs(c-1)
+
+      total_penalty=-(overP+consisP)
+      print('Total penalty',total_penalty)
+      return total_penalty
+
+    fitness(p1)
+    fitness(p2)
+    return None
+  else:
+
+    c+=1
+
+    #Fitness function
+
+    def fitness(slot1):
+      slot=[]
+
+      for i in range(0,len(slot1),3):
+        slot.append((slot1[i:i+3]))
+
+      overP=0
+
+      for i in slot:
+        c=0
+        for j in i:
+          if j=="1":
+            c+=1
+        overP+=(c-1)
+
+      consisP=0
+
+      for i in range(len(slot)):
+        c=int(slot[0][i])+int(slot[1][i])+int(slot[2][i])
+        consisP+=abs(c-1)
+
+      total_penalty=-(overP+consisP)
+      return total_penalty
+
+    fitness(p1)
+    fitness(p2)
+
+
+    #Crossover
+
+    def cross(C1,C2):
+
+      rand_index=random.randint(0,len(C1)-1)
+      c1=C1[0:rand_index]+C2[rand_index:]
+      c2=C2[0:rand_index]+C1[rand_index:]
+      return c1,c2
+
+    cro=cross(p1,p2)
+
+
+    #Mutation
+
+    def muta(C1):
+      rand_index=random.randint(0,len(C1)-1)
+      if C1[rand_index]=="0":
+        C1=C1[0:rand_index]+"1"+C1[rand_index+1:]
+      else:
+        C1=C1[0:rand_index]+"0"+C1[rand_index+1:]
+
+      return C1
+
+    n_p1=muta(cro[0])
+    n_p2=muta(cro[1])
+
+    GA(n_p1,n_p2,c)
+</font>
+GA(p1,p2)
+
+
+
+
+
+
+
+</pre>
+</body>
+</html>

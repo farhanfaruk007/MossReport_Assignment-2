@@ -1,0 +1,233 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/15/22101783_Niaz_Morshed_CSE422_15_Lab_Assignment02_Fall2024_-_Niaz_Morshed.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/18/22101777_Raian_Islam_CSE422_18_Assignment02_Fall2024_-_RAIAN_ISLAM.py<p></p><pre>
+<a name="2"></a><font color="#0000FF"><a href="match4-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_20.gif"/></a>
+
+import random
+source_data = open("/content/sample_data/input1.txt","r")
+result_file1 = open("/content/sample_data/output1.txt","w")
+result_file2 = open("/content/sample_data/output2.txt","w")
+grid_size = list(map(int,source_data.readline().split(" ")))
+input_content = source_data.read().split("\n")
+
+def create_chromosomes(grid_size):
+    genetic_pool = []
+    for i in range(10):
+        binary_sequence = ""
+        for j in range(grid_size[0]*grid_size[1]):
+            binary_sequence += str(random.randint(0,1))
+        genetic_pool.append(binary_sequence)
+    return genetic_pool
+
+initial_generation = create_chromosomes(grid_size)
+
+def evaluate_fitness(genetic_sequence):
+    rows = grid_size[0]
+    cols = grid_size[1]
+    sequence_matrix = []
+    for i in range(0,len(genetic_sequence),rows):
+        sequence_matrix.append(genetic_sequence[i:i+rows])
+
+    row_conflicts = {}
+    for i in range(rows):
+        row_conflicts[i]=0
+    col_conflicts = {}
+    for i in range(cols):
+        col_conflicts[i]=0
+    for i in range(len(sequence_matrix)):
+        for j in range(len(sequence_matrix[i])):
+            row_conflicts[j]+=int(sequence_matrix[i][j])
+            col_conflicts[i]+=int(sequence_matrix[i][j])
+    row_penalty = 0
+    col_penalty = 0
+    for count in row_conflicts.values():
+        row_penalty+=abs(count-1)
+    for count in col_conflicts.values():
+</font>        if count&lt;=0:
+            pass
+        else:
+<a name="0"></a><font color="#FF0000"><a href="match4-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_30.gif"/></a>
+
+            col_penalty+=count-1
+    total_penalty = abs(row_penalty+col_penalty)
+    return genetic_sequence,-total_penalty
+
+def select_parents(genetic_pool):
+    parent1_idx = random.randint(0,len(genetic_pool)-1)
+    parent2_idx = random.randint(0,len(genetic_pool)-1)
+    while parent1_idx == parent2_idx:
+        parent2_idx = random.randint(0,len(genetic_pool)-1)
+    return genetic_pool[parent1_idx],genetic_pool[parent2_idx]
+
+def breed_offspring(parent1,parent2):
+    global initial_generation
+    next_generation = []
+    for i in range(len(initial_generation)//2):
+        fitness1 = evaluate_fitness(parent1)
+        fitness2 = evaluate_fitness(parent2)
+        if fitness1[1]==0:
+            return fitness1[0],fitness1[1]
+        elif fitness2[1]==0:
+            return fitness2[0],fitness2[1]
+        split_point1 = random.randint(0,len(parent1)-1)
+        split_point2 = split_point1+1
+
+        offspring1 = parent1[0:split_point2]+parent2[split_point2:]
+        offspring2 = parent2[0:split_point2]+parent1[split_point2:]
+        mutation_chance = random.randint(0,100)
+        if mutation_chance&gt;30:
+            offspring1 = apply_mutation(offspring1)
+            offspring2 = apply_mutation(offspring2)
+        fitness1 = evaluate_fitness(offspring1)
+        fitness2 = evaluate_fitness(offspring2)
+
+        if fitness1[1]==0:
+            return fitness1[0],fitness1[1]
+        elif fitness2[1]==0:
+            return fitness2[0],fitness2[1]
+        else:
+            next_generation.append(offspring1)
+            next_generation.append(offspring2)
+    initial_generation = next_generation
+    return None
+
+def apply_mutation(sequence):
+    mutation_pos = random.randint(0,len(sequence)-1)
+    mutation_bit = random.randint(0,1)
+    mutated_sequence = ""
+    for i in range(len(sequence)):
+        if i==mutation_pos:
+            mutated_sequence+=str(mutation_bit)
+        else:
+            mutated_sequence+=sequence[i]
+    return mutated_sequence
+
+#Part1
+solution_found = False
+optimal_solution = None
+
+for chromosome in initial_generation:
+    fitness_result = evaluate_fitness(chromosome)
+    if fitness_result[1]==0:
+        solution_found = True
+        optimal_solution = fitness_result
+        break
+if solution_found==True:
+</font><a name="4"></a><font color="#FF00FF"><a href="match4-0.html#4" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_4_3.gif"/></a>
+
+    result_file1.write(f"{optimal_solution[0]}\n")
+    result_file1.write(f"{optimal_solution[1]}")
+else:
+    generation = 0
+    success = False
+    while generation&lt;300:
+        selected_pair = select_parents(initial_generation)
+        breeding_result = breed_offspring(selected_pair[0],selected_pair[1])
+</font>        if breeding_result!=None:
+            success = True
+            result_file1.write(f"{breeding_result[0]}\n")
+            result_file1.write(f"{breeding_result[1]}")
+            break
+        generation+=1
+    if success==False:
+<a name="1"></a><font color="#00FF00"><a href="match4-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_28.gif"/></a>
+
+        sequences = []
+        fitness_scores = []
+        for chromosome in initial_generation:
+            fitness_result = evaluate_fitness(chromosome)
+            sequences.append(fitness_result[0])
+            fitness_scores.append(fitness_result[1])
+        best_fitness = fitness_scores[0]
+        best_idx = 0
+        for i in range(len(fitness_scores)):
+            if fitness_scores[i]&gt;best_fitness:
+                best_fitness = fitness_scores[i]
+                best_idx = i
+        result_file1.write(f"{sequences[best_idx]}\n")
+        result_file1.write(f"{fitness_scores[best_idx]}")
+result_file1.close()
+
+#part2
+def advanced_breeding(parent1,parent2):
+    global initial_generation
+    next_generation = []
+    for i in range(len(initial_generation)//2):
+        fitness1 = evaluate_fitness(parent1)
+        fitness2 = evaluate_fitness(parent2)
+        if fitness1[1]==0:
+            return fitness1[0],fitness1[1]
+        elif fitness2[1]==0:
+            return fitness2[0],fitness2[1]
+        split1_start = random.randint(0,len(parent1)-2)
+        split1_end = split1_start+1
+        split2_start = random.randint(split1_start+1,len(parent1)-1)
+        split2_end = split2_start+1
+
+        offspring1 = parent1[0:split1_end]+parent2[split1_end:split2_end]+parent1[split2_end:]
+        offspring2 = parent2[0:split1_end]+parent1[split1_end:split2_end]+parent2[split2_end:]
+        fitness1 = evaluate_fitness(offspring1)
+        fitness2 = evaluate_fitness(offspring2)
+
+        if fitness1[1]==0:
+            return fitness1[0],fitness1[1]
+        elif fitness2[1]==0:
+            return fitness2[0],fitness2[1]
+        else:
+            next_generation.append(offspring1)
+            next_generation.append(offspring2)
+    initial_generation = next_generation
+    return None
+
+initial_generation = create_chromosomes(grid_size)
+solution_found = False
+optimal_solution = None
+
+for chromosome in initial_generation:
+    fitness_result = evaluate_fitness(chromosome)
+    if fitness_result[1]==0:
+        solution_found = True
+        optimal_solution = fitness_result
+        break
+if solution_found==True:
+</font><a name="5"></a><font color="#FF0000"><a href="match4-0.html#5" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_3.gif"/></a>
+
+    result_file2.write(f"{optimal_solution[0]}\n")
+    result_file2.write(f"{optimal_solution[1]}")
+else:
+    generation = 0
+    success = False
+    while generation&lt;1:
+        selected_pair = select_parents(initial_generation)
+        breeding_result = advanced_breeding(selected_pair[0],selected_pair[1])
+</font>        if breeding_result!=None:
+            success = True
+            result_file2.write(f"{breeding_result[0]}\n")
+            result_file2.write(f"{breeding_result[1]}")
+            break
+        generation+=1
+    if success==False:
+<a name="3"></a><font color="#00FFFF"><a href="match4-0.html#3" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_3_6.gif"/></a>
+
+        sequences = []
+        fitness_scores = []
+        for chromosome in initial_generation:
+            fitness_result = evaluate_fitness(chromosome)
+            sequences.append(fitness_result[0])
+            fitness_scores.append(fitness_result[1])
+        best_fitness = fitness_scores[0]
+        best_idx = 0
+        for i in range(len(fitness_scores)):
+            if fitness_scores[i]&gt;best_fitness:
+                best_fitness = fitness_scores[i]
+                best_idx = i
+        result_file2.write(f"{sequences[best_idx]}\n")
+        result_file2.write(f"{fitness_scores[best_idx]}")
+result_file2.close()
+</font></pre>
+</body>
+</html>

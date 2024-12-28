@@ -1,0 +1,145 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/6/21301542_mahidul_islam_cse422_03_ass02_fall2024_-_Mahidul_Islam_Mahi.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/8/23241116_Ahmad_Farruk_Towsif_8_-_AHMAD_FARRUK_TOWSIF.py<p></p><pre>
+import random
+#input
+def read_input_file(filename):
+    with open(filename, "r") as inpFile:
+        lin = inpFile.readline().split()
+        N, T =int(lin[0]), int(lin[1])
+        crss = []
+        index =0
+        while index &lt; N:
+            c = inpFile.readline().strip()
+            crss.append(c)
+            index=index+ 1      
+    return N,T,crss
+####&gt;&gt;&gt;&lt;&lt;&lt;
+def generate_population(parentSize, N, T):
+    population= []
+    index =0
+    while index&lt; parentSize:
+        chromosome= [random.randint(0, 1) for _ in range(N * T)]
+        population.append(chromosome)
+        index += 1
+<a name="2"></a><font color="#0000FF"><a href="match226-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_3.gif"/></a>
+
+    return population
+
+def calculate_fitness(chromosome, N, T):
+    penalty_overlap =0
+    penalty_consistency= 0
+    #check overlap
+    time_slot_counts =[0] *T
+
+    for t in range(T):
+</font>        time_slot = chromosome[t * N:(t + 1) * N]
+        courses_in_slot = time_slot.count(1)
+        if courses_in_slot &gt; 1:
+            penalty_overlap=penalty_overlap+ (courses_in_slot - 1)
+        time_slot_counts[t]= courses_in_slot
+    course_counts = [0] * N
+    for i in range(N):
+        course_counts[i]= sum(chromosome[t * N + i] for t in range(T))
+    for count in course_counts:
+        if count !=1:
+            penalty_consistency=penalty_consistency+ abs(count -1)
+    fitness = -(penalty_overlap +penalty_consistency)
+    return fitness
+
+def select_parents(population, fitness_scores):
+    total_fitness = sum(fitness_scores)
+    selection_probabilities=[f / total_fitness for f in fitness_scores]
+    parents =random.choices(population, weights=selection_probabilities, k=2)
+    return parents
+
+def single_point_crossover(parent1, parent2, N, T):
+    crossover_points= sorted(random.sample(range(1, N * T), 2))
+    offspring1= (
+        parent1[:crossover_points[0]] + 
+        parent2[crossover_points[0]:crossover_points[1]] + 
+        parent1[crossover_points[1]:])
+    offspring2 =(
+        parent2[:crossover_points[0]] + 
+        parent1[crossover_points[0]:crossover_points[1]] + 
+        parent2[crossover_points[1]:]) 
+    return offspring1, offspring2
+
+#mutation
+def mutate(chromosome, rate=0.01):
+    index = 0
+    while index &lt; len(chromosome):
+        if random.random() &lt; rate:
+            chromosome[index]= 1 -chromosome[index]
+        index = index+1
+    return chromosome
+
+#2poin crossov
+def two_point_crossover(parent1, parent2, N, T):
+    crossover_points =sorted(random.sample(range(1, N * T - 1), 2))
+    offspring1 =(
+        parent1[:crossover_points[0]] + 
+        parent2[crossover_points[0]:crossover_points[1]] + 
+        parent1[crossover_points[1]:])
+    
+    offspring2 = (
+        parent2[:crossover_points[0]] + 
+        parent1[crossover_points[0]:crossover_points[1]] + 
+        parent2[crossover_points[1]:])  
+    return offspring1, offspring2
+#genetic algo
+def genetic_algorithm(N,T,courses, parent_size=10,max_iterations=100):
+    population= generate_population(parent_size, N, T)
+    best_chromosome= None
+    best_fitness= float('-inf')
+    iteration =0
+    while iteration&lt; max_iterations:
+        fitness_scores= [calculate_fitness(chromosome, N, T) for chromosome in population]      
+<a name="0"></a><font color="#FF0000"><a href="match226-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_6.gif"/></a>
+
+        for i in range(parent_size):
+            if fitness_scores[i] &gt;best_fitness:
+                best_fitness=fitness_scores[i]
+                best_chromosome= population[i]     
+        new_population =[]
+
+        while len(new_population)&lt; parent_size:
+            parent1, parent2=select_parents(population, fitness_scores)
+            offspring1, offspring2 =single_point_crossover(parent1, parent2, N, T)     
+            new_population.append(mutate(offspring1))
+</font>            new_population.append(mutate(offspring2)) 
+        population =new_population[:parent_size]
+        iteration= iteration+1   
+    return best_chromosome, best_fitness
+
+def main():
+    N,T,courses=read_input_file('Input.txt')
+    best_chromosome,best_fitness= genetic_algorithm(N, T, courses)
+    chromosome_str= ''.join(map(str, best_chromosome))
+    print(chromosome_str)
+    print(best_fitness)
+<a name="1"></a><font color="#00FF00"><a href="match226-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_6.gif"/></a>
+
+    parent_size=5
+    population =generate_population(parent_size, N, T)
+    fitness_scores = [calculate_fitness(chromosome,N,T) for chromosome in population]
+    parent1, parent2 = select_parents(population,fitness_scores)
+    offspring1, offspring2 =two_point_crossover(parent1, parent2, N, T)
+    #out-results
+    labels =["Parent 1", "Parent 2", "Offspring 1", "Offspring 2"]
+    individuals =[parent1, parent2, offspring1, offspring2]
+</font>    
+    index =0
+    while index &lt; len(labels):
+        individual_str = ''.join(str(gene) for gene in individuals[index])
+        print(f"{labels[index]}: {individual_str}")
+        index=index+1
+
+if __name__ == "__main__":
+    main()</pre>
+</body>
+</html>

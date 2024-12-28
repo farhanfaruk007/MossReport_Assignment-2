@@ -1,0 +1,155 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/7/22101830_Tarek_Alam_Bhuiyan_CSE422_07_Assignment02_Fall2024_-_Tarek_Alam_Bhuiyan.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/11/22101095_Aowfi_CSE422_11_Lab_Assignment2_Fall2024_-_AOWFI_ADON_FORAEJY.py<p></p><pre>
+"""Part 1 starts from here"""
+
+import random
+
+# Reading the file
+input_file = open("input.txt", "r")
+N, T = input_file.readline().split()
+N = int(N)
+T = int(T)
+
+course_list = []
+for _ in range(N):
+    course = input_file.readline().strip()
+    course_list.append(course)
+
+population_size = 10  # As per instructions in class
+max_iterations = 10   # As per instructions in class
+
+# Creating the chromosome for the problem
+def generate_chromosome(N, T):
+    chromosome = [0 for _ in range(N * T)]
+<a name="1"></a><font color="#00FF00"><a href="match138-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_10.gif"/></a>
+
+    for course in range(N):
+        slot = random.randint(0, T - 1)
+        chromosome[course + slot * N] = 1
+    return chromosome
+
+# Initializing the population sample
+def initialize_population(population_size, N, T):
+    return [generate_chromosome(N, T) for _ in range(population_size)]
+
+# Fitness function for evaluation of the chromosome
+def evaluate_fitness(chromosome, N, T):
+    consistency_penalty = 0
+    overlap_penalty = 0
+
+    # Consistency Penalty
+    for course in range(N):
+        count = 0
+</font>        for timeslot in range(T):
+            course_segment = chromosome[timeslot * N:(timeslot + 1) * N]
+            count += course_segment[course]
+        if count != 1:
+            consistency_penalty += abs(count - 1)
+
+    # Overlap Penalty
+    for timeslot in range(T):
+        timeslot_segment = chromosome[timeslot * N:(timeslot + 1) * N]
+        scheduled_count = sum(timeslot_segment)
+<a name="0"></a><font color="#FF0000"><a href="match138-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_16.gif"/></a>
+
+        if scheduled_count &gt; 1:
+            overlap_penalty += scheduled_count - 1
+
+    return -(consistency_penalty + overlap_penalty)
+
+# Parent selection using roulette wheel selection
+def select_parents(population, fitness_values):
+    total_fitness = sum(fitness_values)
+    probabilities = [fitness / total_fitness for fitness in fitness_values]
+    cumulative_probabilities = [sum(probabilities[:i+1]) for i in range(len(probabilities))]
+
+    def select_one_parent():
+        rand_value = random.random()
+        for index, cumulative_prob in enumerate(cumulative_probabilities):
+            if rand_value &lt;= cumulative_prob:
+                return population[index]
+
+    return select_one_parent(), select_one_parent()
+
+# Performing crossover step of GA
+def perform_crossover(parent1, parent2):
+    crossover_point = random.randint(1, len(parent1) - 2)
+    child1 = parent1[:crossover_point] + parent2[crossover_point:]
+</font>    child2 = parent2[:crossover_point] + parent1[crossover_point:]
+    return child1, child2
+
+# Mutation step of GA
+def mutate_chromosome(chromosome, mutation_probability=0.01):
+    for i in range(len(chromosome)):
+<a name="2"></a><font color="#0000FF"><a href="match138-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_7.gif"/></a>
+
+        if random.random() &lt; mutation_probability:
+            chromosome[i] = 1 - chromosome[i]
+    return chromosome
+
+# Genetic Algorithm
+def run_genetic_algorithm(N, T, max_iterations, population_size, mutation_probability=0.01):
+    population = initialize_population(population_size, N, T)
+    best_chromosome = None
+    best_fitness = float('-inf')
+
+    for _ in range(max_iterations):
+</font>        fitness_values = [evaluate_fitness(chromosome, N, T) for chromosome in population]
+
+        # Track the best chromosome
+<a name="3"></a><font color="#00FFFF"><a href="match138-0.html#3" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_3_6.gif"/></a>
+
+        for index, fitness in enumerate(fitness_values):
+            if fitness &gt; best_fitness:
+                best_fitness = fitness
+                best_chromosome = population[index]
+
+        # Generate new population
+        new_population = []
+        for _ in range(population_size // 2):
+            parent1, parent2 = select_parents(population, fitness_values)
+            child1, child2 = perform_crossover(parent1, parent2)
+</font>            new_population.extend([mutate_chromosome(child1, mutation_probability), mutate_chromosome(child2, mutation_probability)])
+
+        population = new_population
+
+    return best_chromosome, best_fitness
+
+best_chromosome, best_fitness = run_genetic_algorithm(N, T, max_iterations, population_size)
+print(f"Best Chromosome: {''.join(map(str, best_chromosome))}")
+print(f"Best Fitness: {best_fitness}")
+
+
+"""Part 2 starts from here"""
+
+# Two-point crossover
+def perform_two_point_crossover(parent1, parent2):
+    point1 = random.randint(1, len(parent1) - 2)
+    point2 = random.randint(point1 + 1, len(parent1))
+    child1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    child2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+    return child1, child2
+
+# Generate initial population
+population = initialize_population(population_size, N, T)
+parent1, parent2 = select_parents(population, [evaluate_fitness(chromosome, N, T) for chromosome in population])
+
+child1, child2 = perform_two_point_crossover(parent1, parent2)
+print(f"Parent 1: {''.join(map(str, parent1))}")
+print(f"Parent 2: {''.join(map(str, parent2))}")
+print(f"Child 1: {''.join(map(str, child1))}")
+print(f"Child 2: {''.join(map(str, child2))}")
+
+print("***Fitness Function Validation***")
+chromosome_example = [1, 1, 0, 1, 1, 0, 0, 1, 0]
+fitness_example = evaluate_fitness(chromosome_example, 3, 3)
+print(f"Example Chromosome: {''.join(map(str, chromosome_example))}")
+print(f"Fitness: {fitness_example}")
+</pre>
+</body>
+</html>

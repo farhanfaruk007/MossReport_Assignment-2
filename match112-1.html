@@ -1,0 +1,95 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/5/21101114_lab2_sec5_-_UMME_FATEMA_LAMIA.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/17/22299179_Farhan_Tanvir_CSE422_17_Assignment02_Fall2024_-_FARHAN_TANVIR.py<p></p><pre>
+import random
+
+def GA_Bracu(N,T,iterations=1000):
+    def fitness(chromosome):
+        nonlocal N
+<a name="3"></a><font color="#00FFFF"><a href="match112-0.html#3" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_3_5.gif"/></a>
+
+        Overlap_Penalty=0
+        slots=[]
+        for i in range(0, len(chromosome),N):
+            slot = chromosome[i:i + N]
+</font>            if slot.count('1')!=0:
+                Overlap_Penalty += abs(slot.count('1')-1)
+            slots.append(list(map(int,slot)))
+        Consistency_Penalty=0    
+        result = list(map(sum, zip(*slots)))
+        for i in result:
+<a name="1"></a><font color="#00FF00"><a href="match112-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_15.gif"/></a>
+
+            Consistency_Penalty+=abs(int(i)-1)
+        return -(Overlap_Penalty+Consistency_Penalty)
+    def selection(population):
+        idx1 = random.randint(0, len(population) - 1)
+        chromosome1 = population.pop(idx1)[0]
+        idx2 = random.randint(0, len(population) - 1)
+        chromosome2 = population.pop(idx2)[0]
+        return chromosome1, chromosome2
+    def crossover(parent1, parent2):
+        crossover_point = random.randint(1, len(parent1) - 1)
+        child1 = parent1[:crossover_point] + parent2[crossover_point:]
+</font>        child2 = parent2[:crossover_point] + parent1[crossover_point:]
+        return child1, child2
+    def two_point_crossover(parent1, parent2):
+        crossover_point1 = random.randint(1, len(parent1) - 2)
+        crossover_point2 = random.randint(crossover_point1 + 1, len(parent1)-1)
+        child1= parent1[:crossover_point1] + parent2[crossover_point1:crossover_point2] + parent1[crossover_point2:]
+<a name="2"></a><font color="#0000FF"><a href="match112-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_12.gif"/></a>
+
+        child2 = parent2[:crossover_point1] + parent1[crossover_point1:crossover_point2] + parent2[crossover_point2:]
+        return child1, child2
+    def mutation(chromosome):
+        fit=fitness(chromosome)
+        if fit==0:
+            return chromosome
+        probability = abs(1/fit)
+        chrom_list=list(chromosome)
+        for i in range(len(chrom_list)):
+            if random.random() &gt; probability:
+                chrom_list[i]='1'if chrom_list[i]=='0'else '0'
+</font>               
+        mutated_chromosome = ''.join(chrom_list)
+        
+        return mutated_chromosome
+
+<a name="0"></a><font color="#FF0000"><a href="match112-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_31.gif"/></a>
+
+    size= N*T
+    population = []
+    for i in range(size):
+        chromosome=''.join(random.choice('01') for i in range(size))
+        fit=fitness(chromosome)
+        population.append((chromosome,fit))
+    population.sort(key=lambda x: x[1] ,reverse=True)    
+    for i in range(iterations):
+        if population[0][1]==0:
+            return population[0]
+        parent1, parent2 = selection(population)
+        child1, child2 = crossover(parent1, parent2)
+        #child1, child2 = two_point_crossover(parent1, parent2)
+        child1=mutation(child1)
+        child2=mutation(child2)
+        fit1=fitness(child1)
+        fit2=fitness(child2)
+        population.append((child1,fit1))
+        population.append((child2,fit2))
+        population.sort(key=lambda x: x[1] ,reverse=True)
+
+    return population[0]
+
+
+
+
+
+with open("input.txt", "r") as file1, open("output.txt", "w") as file2:
+    N,T = map(int, file1.readline().split())
+</font>    print(GA_Bracu(N,T))     </pre>
+</body>
+</html>

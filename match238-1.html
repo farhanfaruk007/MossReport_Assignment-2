@@ -1,0 +1,141 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/9/22299312__Maidul_Islam_22299312_-_MAIDUL_ISLAM.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/16/22301257_CSE422_16_LabAssignment2_-_SYED_NAVEED_MAHMOOD.py<p></p><pre>
+import random
+print("+++++++++++++++++++++++++++++++++++++++++   TASK 1   +++++++++++++++++++++++++++++++++++++++++")
+def create_population(number, timeslots, courses):
+    population = []
+    for i in range(number):
+        chromosome = ""
+        for j in range(timeslots):
+            segment = ''.join(random.choices("01", k=courses))
+            while segment.count("1") == 0:
+                segment = ''.join(random.choices("01", k=courses)) #corner case that it cant be all 0 so replace that particular segment with a valid one
+            chromosome += segment
+        population.append(chromosome)
+    return population
+def fitness_calc(schedule, segments, segment_length):
+    pen_overlap = 0
+    pen_consis = 0
+<a name="1"></a><font color="#00FF00"><a href="match238-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_4.gif"/></a>
+
+    matrix = []
+    for i in range(segments):
+        start = i * segment_length
+        end = start + segment_length
+        matrix.append(schedule[start:end]) #creating a matrix of the schedule so that it gets easierr to process them later
+
+    pen_overlap=overlap(matrix)
+    pen_consis=consis(matrix)
+</font>    fitness = -(pen_overlap + pen_consis)
+    return fitness
+
+def overlap(chromosom_arr): #overlapping error
+  total_overlap=0
+  for elem in chromosom_arr:
+    if elem.count("1") == 0:
+        continue  # No overlapping penalty for a timeslot with all zeros
+    overlap=0
+<a name="2"></a><font color="#0000FF"><a href="match238-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_3.gif"/></a>
+
+    for iter in elem:
+      if iter=="1":
+        overlap+=1
+    if overlap&gt;1:
+      total_overlap+=overlap-1
+  return total_overlap
+
+def consis(chromosom): #consistency error
+</font>    total_pen = 0
+    num_courses = len(chromosom[0])
+    conter = [0] * num_courses
+    for elem in chromosom:
+      for idx, time in enumerate(elem): # used enumerate so that I can keep track of idx and time together
+          if time == "1":
+              conter[idx] += 1
+    for cnter in conter:
+        if cnter != 1:
+            total_pen += abs(cnter - 1)
+
+    return total_pen
+def selection(pupulation,segments,segments_length):
+  pc1=random.choice(pupulation)
+  pc2=random.choice(pupulation)
+  while  pc1 == pc2:
+    pc2 = random.choice(population) # randomly chosen two chromosome from the population as the question wanted
+  return pc1,pc2
+
+def cross(pc1,pc2):
+    point = random.randint(1, len(pc1) - 1)  # Select a crossover point
+    offsp1 = pc1[:point] + pc2[point:]  # Combine parts of both parents
+<a name="0"></a><font color="#FF0000"><a href="match238-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_7.gif"/></a>
+
+    offsp2 = pc2[:point] + pc1[point:]
+    return offsp1, offsp2
+def mutate(chromosome):
+    chromosom_list = list(chromosome) #string not mutable so converting it to list
+    mutation_point = random.randint(0, len(chromosom_list) - 1)
+    if chromosom_list[mutation_point] == '0':
+        chromosom_list[mutation_point] = '1'
+    else:
+        chromosom_list[mutation_point] = '0'
+    mutated_chromosome = ''.join(chromosom_list)
+</font>    return mutated_chromosome
+def sort_by_fitness(item):
+    return item[1] # used for fitness sorting
+def genetic_algorithm(population, segments, segment_length, max_iterations):
+    best_chromosom = None
+    best_fitness = float('-inf')
+    for iteration in range(max_iterations):
+        fitness_scores = []
+        for chromosome in population:
+            fitness = fitness_calc(chromosome, segments, segment_length)
+            fitness_scores.append((chromosome, fitness))
+        fitness_scores.sort(reverse=True, key=sort_by_fitness) 
+        current_best_chromosom, current_best_fitness = fitness_scores[0]# Sort fitness in descending order (higher fitness first)
+        if current_best_fitness &gt; best_fitness: #compare with prev gen
+            best_fitness = current_best_fitness
+            best_chromosom = current_best_chromosom
+        if best_fitness == 0:
+            print(f"Best solution found in iteration {iteration}")
+            return best_chromosom,best_fitness
+        new_population = []
+        while len(new_population) &lt; len(population):
+            while True:
+                pc1, pc2 = selection(population, segments, segment_length) #making sure that no pc is selected which are already in new gen
+                if pc1 not in new_population and pc2 not in new_population:
+                    break
+            offsp1, offsp2 = cross(pc1, pc2)
+            offsp1 = mutate(offsp1)
+            offsp2 = mutate(offsp2)
+            new_population.extend([offsp1, offsp2])
+        population = new_population
+
+    print("Max iterations reached. Returning the best solution found.")
+    return best_chromosom,best_fitness
+abc = open("E:\\8th sem\\422\\labs\\file.txt", "r") #change path here
+var = abc.read().split('\n')[:]
+courses,timeslots=var[0].split(" ")
+courses,timeslots=int(courses),int(timeslots)
+population = create_population(random.randint(10, 15), timeslots, courses)
+best_chromosom,best_fitness = genetic_algorithm(population, timeslots, courses, max_iterations=10000)
+print(f"Best chromosome: {best_chromosom}, Fitness: {best_fitness}")
+print("+++++++++++++++++++++++++++++++++++++++++   TASK 2   +++++++++++++++++++++++++++++++++++++++++")
+def twocrossover(p1,p2):
+  l=len(p1)
+  point1=random.randint(1, l - l//2)
+  point2=random.randint(point1 + l//3, l - 1)
+  offsp1=p1[:point1] + p2[point1:point2] + p1[point2:]
+  offsp2=p2[:point1] + p1[point1:point2] + p2[point2:]
+  return offsp1,offsp2,point1, point2
+p1,p2=selection(population,timeslots,courses)
+new1,new2,po1,po2=twocrossover(p1,p2)
+print("parents",p1,p2)
+print(f"Points chosen: {po1}, {po2}")
+print("offsprings:",new1,new2)</pre>
+</body>
+</html>

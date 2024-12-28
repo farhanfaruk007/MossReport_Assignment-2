@@ -1,0 +1,179 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/1/21201514_IlhanBinAhsan_CSE422_01_Assignment02_Fall2024_-_ILHAN_BIN_AHSAN.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/7/22101031_Anindita_Dutta_CSE422_07_Assignment02_Fall2024_-_ANINDITA_DUTTA.py<p></p><pre>
+import random
+
+def random_select(number_of_people):
+    return random.choice(number_of_people)
+
+def mutate(chromosome_num, rate_of_mut=0.01):
+    for i in range(len(chromosome_num)):
+        if random.random() &lt; rate_of_mut:
+            chromosome_num[i] = 1 - chromosome_num[i]
+    return chromosome_num
+
+
+def crossover(parent_num1, parent_num2): 
+    point = random.randint(1, len(parent_num1) - 1)
+    child_num1 = parent_num1[:point] + parent_num2[point:]
+    child_num2 = parent_num2[:point] + parent_num1[point:]
+    return child_num1, child_num2
+
+def generate_chromosome_num(N, T):
+    chromosome_num = []
+    for _ in range(N * T):
+        chromosome_num.append(random.choice([0, 1]))
+    
+    if not any(chromosome_num):
+        chromosome_num[random.randint(0, N * T - 1)] = 1
+        
+    return chromosome_num
+
+
+def initializing_number_of_people(popu_size, N, T):
+    return [generate_chromosome_num(N, T) for _ in range(popu_size)]
+
+def calculate_fitness(chromosome_num, N, T):
+    penalty_overlap = 0
+    penalty_consistance = 0
+
+    for t in range(T):
+        time_slots = chromosome_num[t * N:(t + 1) * N]
+        course_schedule = sum(time_slots)
+        if course_schedule &gt; 1:
+            penalty_overlap += course_schedule - 1
+
+    for course in range(N):
+        total_sche = sum(chromosome_num[course::N])
+        penalty_consistance += abs(total_sche - 1)
+
+    total_penalty = penalty_overlap + penalty_consistance
+    return -total_penalty
+
+def random_selection_threshold(number_of_people, fitness_values, threshold):
+    valid_parent = [number_of_people[i] for i in range(len(number_of_people)) if fitness_values[i] &gt;= threshold]
+    if valid_parent:
+        return random.choice(valid_parent)
+    return random.choice(number_of_people)
+
+def genetic_algorithm(N, T, max_gener=100, popu_size=20, mutation_rate=0.01):
+    number_of_people = initializing_number_of_people(popu_size, N, T)
+    best_chromosome_num = None
+    best_fitness = float('-inf')
+
+    for generation in range(max_gener):
+        fitness_values = [calculate_fitness(chromosome_num, N, T) for chromosome_num in number_of_people]
+        
+        for i, fitness in enumerate(fitness_values):
+            if fitness &gt; best_fitness:
+                best_fitness = fitness
+                best_chromosome_num = number_of_people[i]
+        
+        if best_fitness == 0:
+            break
+        
+        threshold = sorted(fitness_values, reverse=True)[len(fitness_values) // 2]
+
+        new_people = []
+        while len(new_people) &lt; popu_size:
+            parent_num1 = random_selection_threshold(number_of_people, fitness_values, threshold)
+            parent_num2 = random_selection_threshold(number_of_people, fitness_values, threshold)
+            child_num1, child_num2 = crossover(parent_num1, parent_num2)
+            new_people.append(mutate(child_num1, mutation_rate))
+            new_people.append(mutate(child_num2, mutation_rate))
+
+        number_of_people = new_people[:popu_size]
+
+    return best_chromosome_num, best_fitness
+
+if __name__ == "__main__":
+    data = []
+    with open("Lab02 input.txt", "r") as file:
+        data = file.readlines()
+    N, T = map(int, data[0].split())
+    courses = [line.strip() for line in data[1:]]
+    best_chromosome_num, best_fitness = genetic_algorithm(N, T)
+
+    with open("Lab02 output.txt", "w") as output_file:
+        output_file.write("Best chromosome_num: " + ''.join(map(str, best_chromosome_num)) + "\n")
+        output_file.write("Fitness Value: " + str(best_fitness) + "\n")
+
+
+
+##############################################################################################################################
+
+#task2
+import random
+
+
+def initializing_popu(size_popu, len_of_choromosome):
+    popu_list = []
+    for _ in range(size_popu):
+        choromosome_num = []
+        for _ in range(len_of_choromosome):
+<a name="2"></a><font color="#0000FF"><a href="match203-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_3.gif"/></a>
+
+            choromosome_num.append(random.choice([0, 1]))
+        popu_list.append(choromosome_num)
+    return popu_list
+
+def crossover_parent(parent_num1, parent_num2):
+    len_of_choromosome = len(parent_num1)
+    temp_1 = random.randint(1, len_of_choromosome - 2)
+    temp_2 = random.randint(temp_1 + 1, len_of_choromosome - 1)
+</font>    
+    
+    child_num1 = parent_num1[:temp_1] + parent_num2[temp_1:temp_2] + parent_num1[temp_2:]
+<a name="0"></a><font color="#FF0000"><a href="match203-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_10.gif"/></a>
+
+    child_num2 = parent_num2[:temp_1] + parent_num1[temp_1:temp_2] + parent_num2[temp_2:]
+    
+    return child_num1, child_num2
+
+
+def load_data(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    num_course = int(lines[0].split()[0])
+    num_total_timeslot = int(lines[0].split()[1])
+    course = [line.strip() for line in lines[1:]]
+    return num_course, num_total_timeslot, course
+
+
+def print_terminal(parent_num1, parent_num2, offspring_1, offspring_2):
+</font>    print("Parent 1:", ''.join(str(gene) for gene in parent_num1))
+    print("Parent 2:", ''.join(str(gene) for gene in parent_num2))
+    print("Offspring 1:", ''.join(str(gene) for gene in offspring_1))
+    print("Offspring 2:", ''.join(str(gene) for gene in offspring_2))
+
+
+def run():
+<a name="1"></a><font color="#00FF00"><a href="match203-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_4.gif"/></a>
+
+    input_file = "Lab02 input.txt"
+    
+    num_course, num_total_timeslot, course = load_data(input_file)
+    choromosome_num_length = num_course * num_total_timeslot
+    num_of_people_size = 10
+    
+    num_of_people = initializing_popu(num_of_people_size, choromosome_num_length)
+    
+   
+    parent_num1, parent_num2 = random.sample(num_of_people, 2)
+    
+    
+    offspring_1, offspring_2 = crossover_parent(parent_num1, parent_num2)
+</font>    
+   
+    print_terminal(parent_num1, parent_num2, offspring_1, offspring_2)
+
+if __name__ == "__main__":
+    run()
+        
+</pre>
+</body>
+</html>

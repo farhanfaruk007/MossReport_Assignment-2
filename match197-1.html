@@ -1,0 +1,122 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/6/24141076_AbdullahAlZubayer_CSE422_06_Assignment02_Fall2024_-_ABDULLAH_AL_ZUBAYER.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/14/22299019_CSE422_14_LabAssignment2_-_FAZLE_MOHAMMED_TASFIQ.py<p></p><pre>
+import numpy as np
+import random
+n_course, n_slot = map(int,input().strip().split(" "))
+
+#task A
+def chromosome():
+    sch_arr = ''
+    for i in range(n_course*n_slot):
+        sch_arr+=str(random.choice([0,1]))
+
+    return sch_arr
+
+
+def fitness(n_course,n_slot,sch_arr):
+    tot_course_per_slot = []
+    tot_sch_per_course = np.zeros(n_course)
+    for i in range(len(sch_arr)):
+        if i % n_course == 0:
+            sum = 0
+            for j in range(i, i + n_course):
+                if sch_arr[j] == "1":
+                    sum += 1
+                    tot_sch_per_course[j % n_course] += 1
+            tot_course_per_slot.append(sum)
+
+    # print(sch_arr, tot_course_per_slot, tot_sch_per_course)
+    over_pen, cons_pen = (0, 0)
+
+    for i in range(n_slot):
+        if tot_course_per_slot[i]==0 and n_slot&gt;n_course:
+            continue
+        else:
+            over_pen+=abs(tot_course_per_slot[i]-1)
+    for i in range(n_course):
+        cons_pen+=abs(tot_sch_per_course[i]-1)
+    total_pen = over_pen+cons_pen
+
+    return int(-total_pen)
+
+
+
+def parent_sel(population):
+
+    r1, r2 = random.sample(population, k=2)
+
+    return r1, r2
+
+def mutation(subs):
+    index=random.randrange(0,len(subs))
+
+<a name="2"></a><font color="#0000FF"><a href="match197-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_8.gif"/></a>
+
+    if subs[index]=='0':
+        return subs[:index]+'1'+subs[index+1:]
+    else:
+        return subs[:index]+'0'+subs[index+1:]
+</font>
+
+
+<a name="1"></a><font color="#00FF00"><a href="match197-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_9.gif"/></a>
+
+def crossover(chr1,chr2):
+  split_i=random.randrange(1,len(chr1))
+  temp1,temp2=chr1[:split_i], chr1[split_i:]
+  temp3,temp4=chr2[:split_i], chr2[split_i:]
+
+  return (mutation(temp1+temp4),mutation(temp3+temp2))
+</font>
+def GA():
+    population = []
+
+    for i in range(10):
+        p= chromosome()
+        population.append((p,fitness(n_course,n_slot,p)))
+
+        ini_pop = population
+
+    while True:
+        # min_fit = min(population, key=lambda x: x[1])
+        # population.remove(min_fit)
+
+<a name="0"></a><font color="#FF0000"><a href="match197-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_11.gif"/></a>
+
+        max_fit = max(population, key=lambda x: x[1])
+        if max_fit[1]==0:
+            print(max_fit[0])
+            print(max_fit[1])
+            break
+        population.remove(max_fit)
+        # print(max_fit)
+        temp=[]
+        for i in population:
+            child1,child2=crossover(max_fit[0],i[0])
+            temp.append((child1,fitness(n_course,n_slot,child1)))
+</font>            temp.append((child2,fitness(n_course,n_slot,child2)))
+        population+=temp
+
+    
+    return ini_pop
+
+initial_pop = GA()
+
+#task B
+par1, par2 = parent_sel(initial_pop)
+indexes = random.sample([1,len(par1)], k=2)
+x = min(indexes)
+y = max(indexes)
+print(x,y)
+child1=par1[:x]+par2[x:y]+par1[y:]
+child2=par2[:x]+par1[x:y]+par2[y:]
+
+print(child1[0], child2[0])
+</pre>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/4/21201140_Md._Naimuzzaman_Fahim_CSE422_04_Assignment02_Fall2024_-_MD._NAIMUZZAMAN_FAHIM.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/4/21201140_Md._Naimuzzaman_Fahim_CSE422_04_Assignment02_Fall2024_-_MD._NAIMUZZAMAN_FAHIM.py<p></p><pre>
+import random
+
+<a name="1"></a><font color="#00FF00"><a href="match155-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_16.gif"/></a>
+
+def evaluate_fitness(schedule, num_courses, num_slots):
+    overlap_penalty = 0
+    consistency_penalty = 0
+
+    # Overlap penalty: count courses in each timeslot
+    for slot in range(num_slots):
+        scheduled_count = sum(int(schedule[slot * num_courses + i]) for i in range(num_courses))
+        if scheduled_count &gt; 1:
+            overlap_penalty += (scheduled_count - 1)
+
+    # Consistency penalty: count times each course is scheduled
+    for course in range(num_courses):
+        scheduled_times = sum(int(schedule[i * num_courses + course]) for i in range(num_slots))
+        consistency_penalty += abs(scheduled_times - 1)
+
+    return -(overlap_penalty + consistency_penalty)
+
+def generate_population(pop_size, chromosome_length):
+</font>    """Create an initial population of random binary schedules."""
+    return [''.join(random.choices('01', k=chromosome_length)) for _ in range(pop_size)]
+
+def select_parents(population):
+    """Randomly select two parents from the population."""
+    return random.sample(population, 2)
+
+def single_point_crossover(parent1, parent2):
+    """Perform single-point crossover on two parents to generate offspring."""
+    point = random.randint(1, len(parent1) - 1)
+    offspring1 = parent1[:point] + parent2[point:]
+    offspring2 = parent2[:point] + parent1[point:]
+    return offspring1, offspring2
+
+def two_point_crossover(parent1, parent2):
+    """Perform two-point crossover on two parents to generate offspring."""
+    point1 = random.randint(1, len(parent1) - 2)
+    point2 = random.randint(point1 + 1, len(parent1) - 1)
+    offspring1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    offspring2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+    return offspring1, offspring2
+
+def apply_mutation(schedule, mutation_rate=0.01):
+    """Mutate a schedule by flipping bits with a given probability."""
+    schedule = list(schedule)
+    for i in range(len(schedule)):
+        if random.random() &lt; mutation_rate:
+            schedule[i] = '1' if schedule[i] == '0' else '0'
+    return ''.join(schedule)
+
+def genetic_algorithm(num_courses, num_slots, population_size=10, max_generations=1000, mutation_rate=0.01, target_chromosome=None):
+    """Run the genetic algorithm to optimize the course schedule."""
+<a name="0"></a><font color="#FF0000"><a href="match155-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_21.gif"/></a>
+
+    chromosome_length = num_courses * num_slots
+    population = generate_population(population_size, chromosome_length)
+
+    for generation in range(max_generations):
+        next_generation = []
+
+        for _ in range(population_size // 2):
+            parent1, parent2 = select_parents(population)
+            child1, child2 = single_point_crossover(parent1, parent2)
+            child1 = apply_mutation(child1, mutation_rate)
+            child2 = apply_mutation(child2, mutation_rate)
+            next_generation.extend([child1, child2])
+
+        population = sorted(next_generation, key=lambda x: evaluate_fitness(x, num_courses, num_slots), reverse=True)[:population_size]
+
+        if target_chromosome and target_chromosome in population:
+            return target_chromosome, evaluate_fitness(target_chromosome, num_courses, num_slots)
+
+    best_schedule = max(population, key=lambda x: evaluate_fitness(x, num_courses, num_slots))
+    return best_schedule, evaluate_fitness(best_schedule, num_courses, num_slots)
+</font>
+def main():
+    random.seed(101)  # Different seed to avoid similarity
+    try:
+<a name="2"></a><font color="#0000FF"><a href="match155-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_5.gif"/></a>
+
+        with open('input.txt', 'r') as file:
+            num_courses, num_slots = map(int, file.readline().split())
+            courses = [file.readline().strip() for _ in range(num_courses)]
+</font>    except FileNotFoundError:
+        print("Error: input.txt file not found.")
+        return
+    except ValueError:
+        print("Error: Invalid input format.")
+        return
+
+    target_schedule = "110110010"  # Desired schedule pattern
+    result, fitness = genetic_algorithm(num_courses, num_slots, target_chromosome=target_schedule)
+
+    print("Optimal Schedule:", result)
+    print("Fitness Score:", fitness)
+
+if __name__ == "__main__":
+    main()
+</pre>
+</body>
+</html>

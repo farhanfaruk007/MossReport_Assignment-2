@@ -1,0 +1,141 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/12/22101717_RajinIbnaRajuanurRahman_CSE422_12_Assignment02_Fall2024_-_RAJIN_IBNA_RAJUANUR_RAHMAN(1).py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/12/22101717_RajinIbnaRajuanurRahman_CSE422_12_Assignment02_Fall2024_-_RAJIN_IBNA_RAJUANUR_RAHMAN(1).py<p></p><pre>
+# Part- 01
+<a name="0"></a><font color="#FF0000"><a href="match18-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_99.gif"/></a>
+
+import random
+def generate_population(N, T, p_size):
+    P = []
+    for i in range(p_size):
+      chromosome = ""
+      for j in range(N * T):
+          chromosome += random.choice('01')
+      P.append(chromosome)
+
+    return P
+
+def calculate_fitness(chromosome, N, T):
+    schedule = []
+    for i in range(T):
+      start_idx = i * N
+      end_idx = (i + 1) * N
+      slots = chromosome[start_idx:end_idx]
+      schedule.append(slots)
+
+    OP = 0
+    CP = 0
+    for t in range(T):      # Calculating overlap penalty
+      sched_courses = 0
+      for i in range(N):
+        sched_courses += int(schedule[t][i])
+      if sched_courses &gt; 1:
+        OP += (sched_courses - 1)
+
+    for course in range(N):       # Calculating consistency penalty
+      scheduled_times = 0
+      for t in range(T):
+        scheduled_times += int(schedule[t][course])
+      CP += abs(scheduled_times - 1)
+
+    penalty = OP + CP
+
+    return -penalty
+
+def parents_selection(population):
+    p1 = random.choice(population)
+    p2 = random.choice(population)
+    return p1, p2
+
+def do_crossover(p1, p2, N, T):
+    cross_p = random.randint(1, N * T - 1)
+    offsp1 = p1[:cross_p] + p2[cross_p:]
+    offsp2 = p2[:cross_p] + p1[cross_p:]
+    return offsp1, offsp2
+
+def do_mutation(chromosome):
+    chromosome = list(chromosome)
+
+    idx = random.randint(0, len(chromosome) - 1)
+    chromosome[idx] = str(1 - int(chromosome[idx]))
+
+    return ''.join(chromosome)
+
+
+def genetic_algorithm(N, T, P, p_size = 100, G = 1000):
+
+    for generation in range(G):
+      fitness = []
+      for c in P:
+        score = calculate_fitness(c, N, T)
+        fitness.append((c, score))
+
+      # Sorting fitness part
+      for i in range(len(fitness)):
+        for j in range(i + 1, len(fitness)):
+          if fitness[i][1] &lt; fitness[j][1]:
+            fitness[i], fitness[j] = fitness[j], fitness[i]
+
+      if fitness[0][1] == 0:
+        return fitness[0][0], fitness[0][1]
+
+      # Select the top 50% for reproduction part
+      reproducts = []
+      for i in range(p_size // 2):
+        reproducts.append(fitness[i][0])
+
+      # crossover and mutation part
+      next_G = []
+      while len(next_G) &lt; p_size:
+        p1, p2 = parents_selection(reproducts)
+        offsp1, offsp2 = do_crossover(p1, p2, N, T)
+        next_G.append(do_mutation(offsp1))
+        if len(next_G) &lt; p_size:
+            next_G.append(do_mutation(offsp2))
+
+      population = next_G
+
+    for i in range(len(fitness)):
+      for j in range(i + 1, len(fitness)):
+        if fitness[i][1] &lt; fitness[j][1]:
+          fitness[i], fitness[j] = fitness[j], fitness[i]
+
+    return fitness[0][0], fitness[0][1]
+
+
+file = open("input.txt", "r")
+lines = file.read().strip().split('\n')
+N, T = map(int, lines[0].split())
+courses = lines[1:N + 1]
+
+P = generate_population(N, T, p_size = 10)
+timing, fitness_value = genetic_algorithm(N, T, P, p_size = 10, G = 100)
+
+output_file = open("output.txt", "a")
+output_file.write(f"{timing}\n")
+output_file.write(f"{fitness_value}\n\n")
+
+# Part- 02
+def two_point_crossover(p1, p2):
+    s = len(p1)
+
+    cp1 = random.randint(0, s-1)
+    cp2 = random.randint(cp1+1, s)
+
+    offsp1 = p1[:cp1] + p2[cp1:cp2] + p1[cp2:]
+    offsp2 = p2[:cp1] + p1[cp1:cp2] + p2[cp2:]
+
+    return offsp1, offsp2
+
+p1, p2 = parents_selection(P)
+os1, os2 = two_point_crossover(p1, p2)
+
+output_file.write(f"Created Offspring1: {os1}\n")
+output_file.write(f"Created Offspring2: {os2}")
+</font></pre>
+</body>
+</html>

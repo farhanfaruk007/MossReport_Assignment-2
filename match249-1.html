@@ -1,0 +1,120 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/7/22101679_sadiaislam_cse422_07_assignment02_fall2024_-_SADIA_ISLAM.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/15/22101688_Abdullah_Al_Saud_CSE422_15_Lab_Assignment02_Fall2024_-_Abdullah_Al_Saud.py<p></p><pre>
+#============================part1===================================
+
+
+# Taking input from txt file
+with open(r"D:\8th_sem\CSE422\lab2\input.txt", "r") as input_file:
+    f1 = input_file.read().split()
+    n = int(f1[0])
+    t = int(f1[1])
+    course = f1[2:0]
+
+import random
+
+def calculate_fitness(n,t,c):
+  overlap_p=0
+  consistant_p=0
+  timeslts=[c[i*n:(i+1)*n] for i in range(t)]
+
+  for i in timeslts:
+    overlap_p += max(0,sum(i)-1)
+  for i in range(n):
+    c_count=sum(j[i]for j in timeslts)
+    consistant_p += abs(c_count-1)
+  total_p=-(overlap_p + consistant_p)
+  return total_p
+
+def parent(population,fitness):
+  parent=random.choices(population),random.choices(population)
+  return parent
+
+def crossover(p1,p2):
+  point=random.randint(1,len(p1)-1)
+  offsp1=p1[:point]+p2[point:]
+  offsp2=p2[:point]+p1[point:]
+  return offsp1,offsp2
+
+def mutation(chromo):
+    flipped = [1 - gene for gene in chromo]
+    return flipped
+
+<a name="0"></a><font color="#FF0000"><a href="match249-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_10.gif"/></a>
+
+def genetic_al(n, t, course):
+    population_size = 100
+    max_iteration = 1000
+    mutation_rate = 0.01
+    population = [[random.randint(0, 1) for i in range(n * t)] for j in range(population_size)]
+
+    for i in range(max_iteration):
+        fitnesses = [calculate_fitness(n,t,j) for j in population]
+</font>        if (f &lt;= 0 for f in fitnesses):
+            population = [[random.randint(0, 1) for i in range(n * t)] for j in range(population_size)]
+            continue
+<a name="2"></a><font color="#0000FF"><a href="match249-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_4.gif"/></a>
+
+        max_fit = max(fitnesses)
+        if max_fit == 0:
+            break
+
+        new_population = []
+        while len(new_population) &lt; population_size:
+            p1, p2 = parent(population, fitnesses)
+            offsp1, offsp2 = crossover(p1, p2)
+</font>            offsp1 = mutation(offsp1)
+<a name="1"></a><font color="#00FF00"><a href="match249-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_5.gif"/></a>
+
+            offsp2 = mutation(offsp2)
+            new_population.extend([offsp1, offsp2])
+        population = new_population[:population_size]
+
+    best_fitness = max(fitnesses)
+    best_chromo = population[fitnesses.index(best_fitness)]
+    return best_chromo, best_fitness
+</font>
+
+
+#================================part 2========================================
+
+import random
+def two_point_crossover(p1, p2):
+  if (len(p1) !=len(p2)):
+     print("parents length must be same")
+     return
+     
+  point1 = random.randint(2,3)
+  point2 = random.randint(6,7)
+  offsp1 = p1[:point1] + p2[point1:point2] + p1[point2:]
+  offsp2 = p2[:point1] + p1[point1:point2] + p2[point2:]
+  return offsp1, offsp2
+
+population_size = 100
+population=[[random.randint(0,1) for i in range(n*t)] for j in range(population_size)]
+parent1, parent2 = parent(population, [1]*population_size)
+child1, child2 = two_point_crossover(parent1, parent2)
+
+
+
+best_chromosome,best_fitness=genetic_al(n,t,course)
+
+#=================output_in_console=============
+#=========part 1==========
+print("This is part 1:")
+print("Best Chromosome:",''.join(map(str,best_chromosome)))
+print("Best Fitness:",best_fitness)
+
+#=========part 2==========
+
+print("This is part 2:")
+print("Parent 1:", parent1)
+print("Parent 2:", parent2)
+print("Double point crossover Child 1:", child1)
+print("Double point crossover Child 2:", child2)</pre>
+</body>
+</html>

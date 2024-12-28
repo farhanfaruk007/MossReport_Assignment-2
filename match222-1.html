@@ -1,0 +1,152 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/7/22101379_md_mozahedul_hoque_cse422_07_assignment02_fall2024_-_MD._MOZAHEDUL_HOQUE.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/14/22101487_cse422_14_labAssignment2_-_MD._REDWAN_ISLAM.py<p></p><pre>
+#========================================== Task-1 ================================================================
+<a name="2"></a><font color="#0000FF"><a href="match222-0.html#2" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_4.gif"/></a>
+
+import random
+
+def calculate_fitness(chromosome, num_courses, num_timeslots):
+  penalty_overlap = 0
+  penalty_consistency = 0
+
+  # Calculating overlap penalty
+  timeslots = []
+  for i in range(num_timeslots):
+    start_index = i * num_courses
+</font>    end_index = (i + 1) * num_courses
+    timeslots.append(chromosome[start_index:end_index])
+
+<a name="0"></a><font color="#FF0000"><a href="match222-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_10.gif"/></a>
+
+  for timeslot in timeslots:
+    num_scheduled = sum(timeslot)
+    if num_scheduled &gt; 1:
+      penalty_overlap += num_scheduled - 1
+
+  # Calculating consistency penalty
+  for i in range(num_courses):
+    course_scheduled = 0
+    for timeslot in timeslots:
+      course_scheduled += timeslot[i]
+    if course_scheduled != 1:
+      penalty_consistency += abs(course_scheduled - 1)
+
+  total_penalty = penalty_overlap + penalty_consistency
+  return -total_penalty
+
+def select_parents(population):
+  return random.sample(population, 2)
+</font>
+def single_point_crossover(parent1, parent2):
+  point = random.randint(1, len(parent1) - 1)
+  offspring1 = parent1[:point] + parent2[point:]
+  offspring2 = parent2[:point] + parent1[point:]
+  return offspring1, offspring2
+
+def mutate(chromosome, mutation_rate=0.01):
+  for i in range(len(chromosome)):
+    if random.random() &lt; mutation_rate:
+      chromosome[i] = 1 - chromosome[i]
+  return chromosome
+
+def genetic_algorithm(courses, N, T, population_size=100, max_generations=200):
+  total_population = []
+  for _ in range(population_size):
+    indiv_population = []
+    for _ in range(N * T):
+      indiv_population.append(random.randint(0, 1))
+    total_population.append(indiv_population)
+
+  for generation in range(max_generations):
+    fitness_scores = []
+    for chromosome in total_population:
+      fitness_scores.append(calculate_fitness(chromosome, N, T))
+
+    # Best population:
+    paired_population = []
+    for i in range(len(total_population)):
+      paired_population.append((total_population[i], fitness_scores[i]))
+
+    for i in range(len(paired_population)):
+      for j in range(i + 1, len(paired_population)):
+        if paired_population[i][1] &lt; paired_population[j][1]:
+          paired_population[i], paired_population[j] = paired_population[j], paired_population[i]
+
+<a name="1"></a><font color="#00FF00"><a href="match222-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_4.gif"/></a>
+
+    selected_population = [pair[0] for pair in paired_population[:population_size // 2]]
+
+    next_generation = []
+    while len(next_generation) &lt; population_size:
+      parent1, parent2 = select_parents(selected_population)
+      offspring1, offspring2 = single_point_crossover(parent1, parent2)
+      next_generation.append(mutate(offspring1))
+</font>      next_generation.append(mutate(offspring2))
+
+    total_population = next_generation
+
+
+  best_solution = None
+  best_fitness = -float('inf')
+
+  for chromosome in total_population:
+    fitness = calculate_fitness(chromosome, N, T)
+    if fitness &gt; best_fitness:
+      best_solution = chromosome
+      best_fitness = fitness
+
+  return best_solution, best_fitness
+
+def main():
+  N = int(input(f"Course number- "))
+  T = int(input(f"Timeslot number- "))
+
+  for i in range(N):
+    courses = input(f"Enter course no.{i+1}: ")
+
+  best_solution, best_fitness = genetic_algorithm(courses, N, T)
+  print("Best Schedule: ", ''.join(map(str, best_solution)))
+  print("Fitness: ", best_fitness)
+
+if __name__ == "__main__":
+  main()
+
+
+#========================================== Task-2 =====================================================================
+import random
+
+def two_point_crossover(parent_1,parent_2):
+  if(len(parent_1)!=len(parent_2)):
+    print("Parents must be same length")
+    return
+
+  point_1= random.randint(2,3)
+  point_2= random.randint(6,7)
+  print(f"Random crossover points: {point_1} and {point_2}")
+
+  chromosome_1= parent_1[:point_1] + parent_2[point_1:point_2]+ parent_1[point_2:]
+  chromosome_2= parent_2[:point_1] + parent_1[point_1:point_2]+ parent_2[point_2:]
+
+  return chromosome_1, chromosome_2
+
+
+def main():
+  parent_1= [0, 0, 0, 1, 1, 1, 0, 0, 0]
+  parent_2= [1, 1, 1, 0, 0, 0, 1, 1, 1]
+
+  chromosome_1, chromosome_2= two_point_crossover(parent_1,parent_2)
+
+  print(f"Parent 1: {parent_1}")
+  print(f"Parent 2: {parent_2}")
+  print(f"Child 1: {chromosome_1}")
+  print(f"Child 2: {chromosome_2}")
+
+if __name__== "__main__":
+  main()</pre>
+</body>
+</html>

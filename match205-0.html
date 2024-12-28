@@ -1,0 +1,156 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/15/22201074_Sougata_Chowdhury_CSE422_15_Lab_Assignment02_-_SOUGATA_CHOWDHURY.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/15/22201074_Sougata_Chowdhury_CSE422_15_Lab_Assignment02_-_SOUGATA_CHOWDHURY.py<p></p><pre>
+
+#task 1
+import random
+
+input_data = open("input2.txt", "r")
+output_data = open("outputFile.txt", "w")
+
+
+N, T = list(map(int, input_data.readline().split()))
+courses = []
+
+for i in range(N):
+  course = input_data.readline().split()
+  courses.append(course[0])
+
+def parent_select(created_population, fitness):
+  total_fit = 0
+  for fit in fitness:
+<a name="1"></a><font color="#00FF00"><a href="match205-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_8.gif"/></a>
+
+    total_fit += fit
+
+  selection = []
+  for fit in fitness:
+    selection.append(fit / total_fit)
+
+  parent_result = random.choices(created_population, weights=selection, k=2)
+  return parent_result
+
+def random_mutation(chromosome, mutation_rate):
+  l = list(chromosome)
+  for i in range(len(l)):
+    if random.random() &lt; mutation_rate:
+      if l[i] == "0":
+</font>        l[i] = "1"
+      else:
+        l[i] = "0"
+  mutated_chromosome = ''.join(l)
+  return mutated_chromosome
+
+def cross_over(size_of_chromo, parent_1, parent_2):
+  div_point = random.randint(1, size_of_chromo - 1)
+  child_1 = parent_1[:div_point] + parent_2[div_point:]
+  child_2 = parent_2[:div_point] + parent_1[div_point:]
+  return child_1, child_2
+
+def fitness_check(chromosome, N, T):
+  schedule = []
+  for timeslot_index in range(T):
+    timeslot = []
+    start_index = timeslot_index * N
+    end_index = start_index + N
+    for c_idx in range(start_index, end_index):
+      timeslot.append(int(chromosome[c_idx]))
+    schedule.append(timeslot)
+
+  overlap_penalty = 0
+  continuity_penalty = 0
+
+  for timeslot in schedule:
+    temp_fitness = 0
+    for course in timeslot:
+      if course == 1:
+        temp_fitness += 1
+    if temp_fitness &gt; 1:
+      overlap_penalty += (temp_fitness - 1)
+
+  for c_idx in range(N):
+    course_count = 0
+    for timeslot in schedule:
+      if timeslot[c_idx] == 1:
+        course_count += 1
+    if course_count != 1:
+      continuity_penalty += abs(course_count - 1)
+
+  total_penalty = overlap_penalty + continuity_penalty
+  fitness_rate = -total_penalty
+  return fitness_rate
+
+
+def population_generator(size_of_population, N, T):
+<a name="0"></a><font color="#FF0000"><a href="match205-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_13.gif"/></a>
+
+  created_population = []
+
+  for i in range(size_of_population):
+    chromosome = ""
+    for j in range(N * T):
+      chromosome += random.choice(["0", "1"])
+    created_population.append(chromosome)
+
+  return created_population
+
+def gen_algo(N, T, size_of_population=10, num_of_generation=10, mutation_rate=0.05):
+  created_population = population_generator(size_of_population, N, T)
+  better_chromosome = None
+  better_fitness = float('-inf')
+
+  for i in range(num_of_generation):
+    fitness = []
+    for chromosome in created_population:
+      fitness.append(fitness_check(chromosome, N, T))
+
+    for index in range(size_of_population):
+</font>      if fitness[index] &gt; better_fitness:
+        better_fitness = fitness[index]
+        better_chromosome = created_population[index]
+        print(better_fitness,better_chromosome)
+      new_population = []
+      while len(new_population) &lt; size_of_population:
+        parent_1, parent_2 = parent_select(created_population, fitness)
+        child_1, child_2 = cross_over(N * T, parent_1, parent_2)
+        mutated_child_1 = random_mutation(child_1, mutation_rate)
+        mutated_child_2 = random_mutation(child_2, mutation_rate)
+        new_population.extend([mutated_child_1, mutated_child_2])
+
+      created_population = new_population[:size_of_population]
+
+  return better_chromosome, better_fitness
+
+size_of_chromo = N * T
+better_chromosome, better_fitness = gen_algo(N, T)
+output_data.write(str(better_chromosome))
+output_data.write("\n")
+output_data.write(str(better_fitness))
+output_data.close()
+
+#Task 2
+import random
+
+def two_point_crossover(parent1, parent2):
+  length = len(parent1)
+  point1 = random.randint(0, length - 2)
+  point2 = random.randint(point1 + 1, length - 1)
+
+  child1 = (parent1[:point1] + parent2[point1:point2] + parent1[point2:])
+  child2 = (parent2[:point1] + parent1[point1:point2] + parent2[point2:])
+
+  return child1, child2
+
+# Example inputs
+parent1 = "000111000"
+parent2 = "111000111"
+
+# Perform the crossover
+child1, child2 = two_point_crossover(parent1, parent2)
+print(child1,child2)</pre>
+</body>
+</html>

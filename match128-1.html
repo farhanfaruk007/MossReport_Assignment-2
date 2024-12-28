@@ -1,0 +1,131 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/4/22101229_Aparup_Chowdhury_CSE422_04_Assignment02_Fall2024_-_APARUP_CHOWDHURY.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/5/20101557_Lab2_Sec5_-_MOHAMMOD_TAREQ_AZIZ.py<p></p><pre>
+import numpy as np
+import random
+import math
+
+# ==========[ Part:01 ]==========
+
+def populate(N, T, popSize):
+    popList = []
+    for _ in range(popSize):
+        popChars = []
+        for _ in range(N * T):
+            popChars.append(random.choice('01'))
+        population = ''.join(popChars)
+        popList.append(population)
+    return popList
+
+
+def selection(population):
+    return random.choice(population), random.choice(population)
+
+
+def overlapPenalty(tSlots, N, T):
+<a name="1"></a><font color="#00FF00"><a href="match128-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_19.gif"/></a>
+
+    oPoints = 0
+    for i in range(T):
+        indSlot = tSlots[i * N:(i + 1) * N]
+        count = max(indSlot.count("1") - 1, 0)
+        oPoints += count
+    return oPoints
+
+
+def consistencyPenalty(tSlots, N, T):
+    cPoints = 0
+    for i in range(N):
+        pCount = 0
+        for j in range(T):
+            pCount += int(tSlots[j * N + i])
+        cPoints += abs(pCount - 1)
+    return cPoints
+
+
+def fitFunc(tSlots, N, T):
+    penalty = -(overlapPenalty(tSlots, N, T) + consistencyPenalty(tSlots, N, T))
+    return penalty
+
+
+def crossover(p1, p2, N, T):
+</font>    point = random.randint(1, N * T - 1)
+    c1 = p1[:point] + p2[point:]
+<a name="0"></a><font color="#FF0000"><a href="match128-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_28.gif"/></a>
+
+    c2 = p2[:point] + p1[point:]
+    return c1, c2
+
+
+def mutation(child, N, T):
+    point = random.randint(0, N * T - 1)
+    list1 = list(child)
+    if list1[point] == '1':
+        list1[point] = '0'
+    else:
+        list1[point] = '1'
+    return ''.join(list1)
+
+
+def GA(N, T, popSize, iterations):
+    population = populate(N, T, popSize)
+    lowFitness = -math.inf
+    bestSlot = None
+
+    for _ in range(iterations):
+        newPop = []
+        for _ in range(popSize // 2):
+            p1, p2 = selection(population)
+            c1, c2 = crossover(p1, p2, N, T)
+            newPop.extend([mutation(c1, N, T), mutation(c2, N, T)])
+        
+        population = newPop
+        for slots in population:
+            fitValue = fitFunc(slots, N, T)          
+            if fitValue &gt; lowFitness:
+                lowFitness = fitValue
+                bestSlot = slots
+            if lowFitness == 0:
+                break
+
+    return lowFitness, bestSlot
+
+
+courses = []
+</font>with open('input.txt', 'r') as f:
+    store = f.readline().split()
+    N, T = map(int, store)
+    for i in range(N):
+        courses.append(f.readline().strip())
+
+
+popSize = N * T
+iterations = 100
+best_fitness, best_schedule = GA(N, T, popSize, iterations)
+print(best_schedule)
+print(best_fitness)
+
+
+# ==========[ Part:02 ]==========
+
+def twoPointCrossover(p1, p2, N, T):
+    point1 = random.randint(0, N * T - 2)
+    point2 = random.randint(point1 + 1, N * T - 1)
+    c1 = p1[:point1] + p2[point1:point2] + p1[point2:]
+    c2 = p2[:point1] + p1[point1:point2] + p2[point2:]
+    return c1, c2
+
+
+population = populate(N, T, popSize)
+p1, p2 = selection(population)
+c1, c2 = twoPointCrossover(p1, p2, N, T)
+print("Parent-1:", p1)
+print("Parent-2:", p2)
+print("Child-1:", c1)
+print("Child-2:", c2)</pre>
+</body>
+</html>

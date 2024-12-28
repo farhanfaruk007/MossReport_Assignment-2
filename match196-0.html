@@ -1,0 +1,141 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/9/22101047_SaadmanBinJashim_22101047_-_SAADMAN_BIN_JASHIM.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/9/22101047_SaadmanBinJashim_22101047_-_SAADMAN_BIN_JASHIM.py<p></p><pre>
+#Task1
+import random
+
+with open("input.txt", "r") as f:
+   
+    N, T = map(int, f.readline().strip().split())
+
+
+
+def init_pop(N, T, length=100):
+    population = []  
+    
+    for _ in range(length):
+        chrom = []  
+        for _ in range(N * T):
+            chrom.append(random.randint(0, 1)) 
+        population.append(chrom)
+    
+    return population
+
+
+
+def single_point_crossover(pop1, pop2):
+    val = random.randint(1, len(pop1) - 1)
+    offspring1 = pop1[:val] + pop2[val:]
+    offspring2 = pop2[:val] + pop1[val:]
+    return offspring1, offspring2
+
+def mutate(chrom, m_prob=7.89):
+    for i in range(len(chrom)):
+        if random.random() &lt; m_prob:
+            chrom[i] = 1 - chrom[i]
+        
+    return chrom
+
+def calc_fit(chrom, N, T):
+    overlap_pen = 0
+    
+    for i in range(T):
+        timeslot = chrom[i * N:(i + 1) * N]
+        count = sum(timeslot)
+        if count &gt; 1:
+            overlap_pen += (count - 1)
+
+    course_tally = [0] * N
+
+    for i in range(N):
+        for t in range(T):
+            course_tally[i] += chrom[t * N + i]
+            
+        
+
+    consistency_pen = 0
+    for count in course_tally:
+        consistency_pen += abs(count - 1)
+<a name="2"></a><font color="#0000FF"><a href="match196-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_4.gif"/></a>
+
+    total_penalty = overlap_pen + consistency_pen
+
+    return -total_penalty
+
+
+def select_pop(pop, fit, num_p):
+    sorted_pop = sorted(zip(pop, fit), key=lambda x: x[1], reverse=True)
+</font>    selected_parents = [chrom for chrom, _ in sorted_pop[:num_p]]
+
+<a name="1"></a><font color="#00FF00"><a href="match196-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_5.gif"/></a>
+
+    return selected_parents
+
+def genetic_alg(N, T, gens=200, length=100, num_p=50):
+    pop = init_pop(N, T, length)
+
+    for _ in range(gens):
+        fit = []
+</font>        for chrom in pop:
+            fit.append(calc_fit(chrom, N, T))
+<a name="0"></a><font color="#FF0000"><a href="match196-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_14.gif"/></a>
+
+        parents = select_pop(pop, fit, num_p)
+
+        new_gen = []
+        while len(new_gen) &lt; length:
+            parent_a, parent_b = random.sample(parents, 2)
+            child_a, child_b = single_point_crossover(parent_a, parent_b)
+
+            child_a = mutate(child_a)
+            child_b = mutate(child_b)
+            new_gen.append(child_a)
+            if len(new_gen) &lt; length:
+                new_gen.append(child_b)
+
+        pop = new_gen
+
+    best_chromosome = max(pop, key=lambda c: calc_fit(c, N, T))
+    fit_val = calc_fit(best_chromosome, N, T)
+
+    return ''.join(map(str, best_chromosome)), fit_val
+
+
+best_sch, fitness_val = genetic_alg(N, T)
+</font>print("Best Schedule:", best_sch)
+print("Fitness Score:", fitness_val)
+
+#task2
+###
+def random_pop(length):
+    result = []
+    for _ in range(length):
+        bits = random.choice("01")
+        result.append(bits)
+    return ''.join(result)
+
+length = 9
+pop1 = random_pop(length)
+pop2 = random_pop(length)
+
+def two_point_crossover(pop1, pop2):
+    pt1 = random.randint(0, len(pop1) - 1)
+    pt2 = random.randint(pt1 + 1, len(pop1))
+
+    child1 = pop1[:pt1] + pop2[pt1:pt2] + pop1[pt2:]
+    child2 = pop2[:pt1] + pop1[pt1:pt2] + pop2[pt2:]
+
+    return child1, child2
+
+child1, child2 = two_point_crossover(pop1, pop2)
+
+print("Parent 1:", pop1)
+print("Parent 2:", pop2)
+print("Offspring 1:", child1)
+print("Offspring 2:", child2)</pre>
+</body>
+</html>

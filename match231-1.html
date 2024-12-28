@@ -1,0 +1,129 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/14/19301029_CSE422_14_LabAssignment2.py_-_ARNAB_DAS.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/15/24341239_Md._Abu_Rayhan_CSE422_15_Lab_Assignment02_Fall2024_-_MD._ABU_RAYHAN.py<p></p><pre>
+import random
+
+# Fitness function
+def fitness(schedule, N, T):
+    overlap_penalty = 0
+    consistency_penalty = 0
+
+    # Calculate overlap penalty
+    for t in range(T):
+        timeslot = schedule[t * N:(t + 1) * N]
+        overlap_penalty += max(0, sum(timeslot) - 1)
+
+    # Calculate consistency penalty
+    for n in range(N):
+        course_count = sum(schedule[n + t * N] for t in range(T))
+        consistency_penalty += abs(course_count - 1)
+
+    total_penalty = overlap_penalty + consistency_penalty
+    return -total_penalty
+
+# Random selection for crossover
+def select_parents(population):
+    return random.sample(population, 2)
+
+# Single-point crossover
+def crossover(parent1, parent2):
+    point = random.randint(1, len(parent1) - 1)
+    offspring1 = parent1[:point] + parent2[point:]
+    offspring2 = parent2[:point] + parent1[point:]
+    return offspring1, offspring2
+
+# Mutation function
+def mutate(offspring, mutation_rate=0.01):
+    for i in range(len(offspring)):
+        if random.random() &lt; mutation_rate:
+<a name="1"></a><font color="#00FF00"><a href="match231-0.html#1" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_10.gif"/></a>
+
+            offspring[i] = 1 - offspring[i]
+    return offspring
+
+# Create initial population
+def create_population(size, N, T):
+    population = []
+    for _ in range(size):
+        chromosome = [random.randint(0, 1) for _ in range(N * T)]
+        population.append(chromosome)
+    return population
+
+# Genetic Algorithm
+def genetic_algorithm(N, T, pop_size=100, max_iterations=1000):
+</font><a name="0"></a><font color="#FF0000"><a href="match231-0.html#0" target="0"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_12.gif"/></a>
+
+    population = create_population(pop_size, N, T)
+    best_fitness = float('-inf')
+    best_schedule = None
+
+    for _ in range(max_iterations):
+        new_population = []
+        for _ in range(pop_size // 2):
+            parent1, parent2 = select_parents(population)
+            offspring1, offspring2 = crossover(parent1, parent2)
+            offspring1 = mutate(offspring1)
+            offspring2 = mutate(offspring2)
+            new_population.extend([offspring1, offspring2])
+
+        population = new_population
+        for schedule in population:
+            fit = fitness(schedule, N, T)
+</font>            print("Schedule:", ''.join(map(str, schedule)), "Fitness Value:", fit)
+            if fit &gt; best_fitness:
+                best_fitness = fit
+                best_schedule = schedule
+                if best_fitness == 0:
+                    return best_schedule, best_fitness
+
+    return best_schedule, best_fitness
+
+
+# Read input from file
+def read_input(file_name):
+    with open(file_name, 'r') as file:
+        lines = file.readlines()
+        N, T = map(int, lines[0].strip().split())
+    return N, T
+
+# Example Usage
+def do():
+    N, T = read_input('input.txt')
+    best_schedule, best_fitness = genetic_algorithm(N, T)
+    print("Best Schedule:", ''.join(map(str, best_schedule)))
+    print("Fitness Value:", best_fitness)
+do()
+
+# Part 2
+
+# Function to perform two-point crossover
+def two_point_crossover(parent1, parent2):
+    length = len(parent1)
+    point1 = random.randint(1, length - 2)
+    point2 = random.randint(point1 + 1, length - 1)
+
+    offspring1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    offspring2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+
+    return offspring1, offspring2
+
+def Print():
+    N, T = read_input('input.txt')
+    pop_size = 10
+    population = create_population(pop_size, N, T)
+    parent1, parent2 = random.sample(population, 2)
+    offspring1, offspring2 = two_point_crossover(parent1, parent2)
+    print("Parent 1:", ''.join(map(str, parent1)))
+    print("Parent 2:", ''.join(map(str, parent2)))
+    print("Offspring 1:", ''.join(map(str, offspring1)))
+    print("Offspring 2:", ''.join(map(str, offspring2)))
+
+Print()
+
+</pre>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/6/24141224_SyedShakibAhmed_CSE422_06_Assignment02_Fall2024_-_SYED_SHAKIB_AHMED.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/6/24141224_SyedShakibAhmed_CSE422_06_Assignment02_Fall2024_-_SYED_SHAKIB_AHMED.py<p></p><pre>
+import random
+file1 = open("input.txt","r")
+
+def initial_pop(N, T):
+    length = N * T
+    population_list = []
+    for i in range(length + 1):
+        chromosomes = ""
+        for j in range(length):
+            chromosomes += random.choice("01")
+        population_list.append(chromosomes)
+    
+    return population_list
+
+
+def decoding_chromo(chromosome, no_of_courses):
+    decoded_list = []
+    segment = ""
+    count = 0
+    for bit in chromosome:
+        segment += bit
+        count += 1
+        if count == no_of_courses:
+            decoded_list.append(segment)
+            segment = ""
+            count = 0 
+
+    return decoded_list
+
+
+<a name="0"></a><font color="#FF0000"><a href="match78-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_61.gif"/></a>
+
+def calc_fitness(chromosome, no_of_courses, np_of_timeslots):
+    decoded = decoding_chromo(chromosome, no_of_courses)
+    overlap_penalty = 0
+    consistency_penalty = 0
+
+    course_count_list = [0] * no_of_courses
+
+    for timeslot in decoded:
+        courses_in_slot = 0
+        for i in range(len(timeslot)):
+            if timeslot[i] == "1":
+                courses_in_slot += 1
+                course_count_list[i] += 1
+        if courses_in_slot &gt; 1:
+            overlap_penalty += courses_in_slot - 1
+
+    for count in course_count_list:
+        if count != 1:
+            consistency_penalty += abs(count - 1)
+
+    total_penalty = -(overlap_penalty + consistency_penalty)
+    return total_penalty
+
+
+def select_parents(population, fitness_values):
+    total_fitness = sum(fitness_values)
+    probabilities = [f / total_fitness for f in fitness_values]
+
+    parent1 = random.choices(population, weights=probabilities, k=1)[0]
+    parent2 = random.choices(population, weights=probabilities, k=1)[0]
+
+    return parent1, parent2
+
+
+def single_point_crossover(parent1, parent2):
+    point = random.randint(1, len(parent1) - 1)
+    offspring1 = parent1[:point] + parent2[point:]
+    offspring2 = parent2[:point] + parent1[point:]
+    return offspring1, offspring2
+
+
+def mutation(chromosome):
+    mutated = ""
+    for bit in chromosome:
+        mutated += "1" if bit == "0" else "0"
+
+    return mutated
+
+
+def genetic_algorithm(num_courses, num_timeslots):
+    population = initial_pop(num_courses, num_timeslots)
+
+    for x in range(50):
+        fitness_cal = [calc_fitness(chromo, num_courses, num_timeslots) for chromo in population]
+
+        new_population = []
+        for _ in range(len(population) // 2):
+            parent1, parent2 = select_parents(population, fitness_cal)
+            offspring1, offspring2 = single_point_crossover(parent1, parent2)
+            offspring1 = mutation(offspring1)
+            offspring2 = mutation(offspring2)
+            new_population.append(offspring1)
+            new_population.append(offspring2)
+
+        population = new_population
+
+    fitness_cal = [calc_fitness(chromo, num_courses, num_timeslots) for chromo in population]
+    perfect_chromo = population[fitness_cal.index(max(fitness_cal))]
+    perfect_fit = max(fitness_cal)
+
+    return perfect_chromo, perfect_fit
+
+
+def two_point_crossover(parent1, parent2):
+    point1 = random.randint(2,3)
+    point2 = random.randint(6,7)
+    offspring1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    offspring2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+</font>
+    return offspring1, offspring2
+
+
+no_of_courses = 0
+<a name="1"></a><font color="#00FF00"><a href="match78-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_4.gif"/></a>
+
+no_of_timeslots = 0
+courses_list = []
+
+line_count = 0
+for line in file1:
+    if line_count == 0:
+        text = line.split()
+        no_of_courses = int(text[0])
+</font>        no_of_timeslots = int(text[1])
+    else:
+        courses_list.append(line.strip())
+
+    line_count += 1
+
+perfect_chromo, perfect_fit = genetic_algorithm(no_of_courses, no_of_timeslots)
+
+print("====Part1====\n")
+print(perfect_chromo)
+print(perfect_fit)
+
+print("Question Output Test: ")
+chromosome = "110110010"
+print(calc_fitness(chromosome, 3, 3))
+
+
+print("=====Part2=====\n")
+parent1 = "000111000"
+parent2 = "111000111"
+offspring1, offspring2 = two_point_crossover(parent1, parent2)
+
+print("Offspring 1: ", offspring1)
+print("Offspring 2: ", offspring2)
+</pre>
+</body>
+</html>

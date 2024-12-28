@@ -1,0 +1,116 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/4/21141004_TanzinaAfrinLazika_CSE422_04_Assignment02_Fall2024.py.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/4/21141004_TanzinaAfrinLazika_CSE422_04_Assignment02_Fall2024.py.py<p></p><pre>
+import random
+
+def select_parents(population, fitness_scores):
+    total_fitness = sum(fitness_scores)
+    selection_probs = [f / total_fitness for f in fitness_scores]
+    parents = random.choices(population, weights=selection_probs, k=2)
+    return parents
+
+def calculate_fitness(chromosome, N, T):
+    overlap_penalty = 0
+    consistency_penalty = 0
+    
+    # Calculate overlap penalty
+    for t in range(T):
+        timeslot = chromosome[t*N:(t+1)*N]
+        scheduled_courses = sum(timeslot)
+        if scheduled_courses &gt; 1:
+            overlap_penalty += scheduled_courses - 1
+    
+    # Calculate consistency penalty
+    for n in range(N):
+        course_scheduled_times = sum(chromosome[n::N])
+        if course_scheduled_times != 1:
+            consistency_penalty += abs(course_scheduled_times - 1)
+    
+    total_penalty = overlap_penalty + consistency_penalty
+    fitness = -total_penalty
+    return fitness
+
+def crossover(parent1, parent2):
+    point = random.randint(1, len(parent1) - 1)
+    offspring1 = parent1[:point] + parent2[point:]
+<a name="0"></a><font color="#FF0000"><a href="match247-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_10.gif"/></a>
+
+    offspring2 = parent2[:point] + parent1[point:]
+    return offspring1, offspring2
+
+
+def mutate(chromosome, mutation_rate=0.01):
+    mutated = chromosome[:]
+    for i in range(len(mutated)):
+        if random.random() &lt; mutation_rate:
+            mutated[i] = 1 - mutated[i]  # Flip the bit
+</font>    return mutated
+
+
+def genetic_algorithm(N, T, max_iterations=1000):
+    population_size = 100
+    population = [[random.randint(0, 1) for _ in range(N * T)] for _ in range(population_size)]
+    
+<a name="1"></a><font color="#00FF00"><a href="match247-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_7.gif"/></a>
+
+    for iteration in range(max_iterations):
+        fitness_scores = [calculate_fitness(chromosome, N, T) for chromosome in population]
+        
+        if max(fitness_scores) == 0:
+            break
+        
+        new_population = []
+        for _ in range(population_size // 2):
+            parent1, parent2 = select_parents(population, fitness_scores)
+</font>            offspring1, offspring2 = crossover(parent1, parent2)
+<a name="2"></a><font color="#0000FF"><a href="match247-1.html#2" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_2_5.gif"/></a>
+
+            new_population.extend([mutate(offspring1), mutate(offspring2)])
+        
+        population = new_population
+    
+    best_chromosome = max(population, key=lambda chromo: calculate_fitness(chromo, N, T))
+    best_fitness = calculate_fitness(best_chromosome, N, T)
+</font>    
+    return best_chromosome, best_fitness
+
+# Example usage
+N = 3
+T = 3
+best_schedule, best_fitness = genetic_algorithm(N, T)
+print("Best Schedule:", ''.join(map(str, best_schedule)))
+print("Fitness:", best_fitness)
+
+
+
+
+import random
+
+def two_point_crossover(parent1, parent2):
+    assert len(parent1) == len(parent2), "Parents must have the same length"
+
+    point1 = random.randint(1, len(parent1) - 2)
+    point2 = random.randint(point1 + 1, len(parent1) - 1)
+
+    offspring1 = parent1[:point1] + parent2[point1:point2] + parent1[point2:]
+    offspring2 = parent2[:point1] + parent1[point1:point2] + parent2[point2:]
+
+    return offspring1, offspring2, point1, point2
+
+parent1 = [0, 0, 0, 1, 1, 1, 0, 0, 0]
+parent2 = [1, 1, 1, 0, 0, 0, 1, 1, 1]
+
+offspring1, offspring2, point1, point2 = two_point_crossover(parent1, parent2)
+
+print(f"Parent 1: {parent1}")
+print(f"Parent 2: {parent2}")
+print(f"Crossover points: {point1}, {point2}")
+print(f"Offspring 1: {offspring1}")
+print(f"Offspring 2: {offspring2}")
+</pre>
+</body>
+</html>

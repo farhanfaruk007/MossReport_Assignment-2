@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/2/24141157_lab2_sec2_-_RAIYAN_AHMED.py</title>
+</head>
+<body bgcolor="white">
+<hr/>
+C:/Users/Farhan_Faruk/Downloads/Lab2_Submission/2/24141157_lab2_sec2_-_RAIYAN_AHMED.py<p></p><pre>
+import random
+
+def create_population(pop_size, chrom_length):
+<a name="0"></a><font color="#FF0000"><a href="match224-1.html#0" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_0_18.gif"/></a>
+
+    population = []
+    for _ in range(pop_size):
+        chrom = ""
+        for _ in range(chrom_length):
+            chrom += random.choice("01")
+        population.append(chrom)
+    return population
+
+def calc_fitness(chrom, courses, slots):
+    overlap_penalty = 0
+    consistency_penalty = 0
+
+    for i in range(0, len(chrom), courses):
+        slot = chrom[i:i + courses]
+        active = slot.count("1")
+        if active &gt; 1:
+            overlap_penalty += active - 1
+
+    for j in range(courses):
+        course_schedule = chrom[j::courses]
+</font>        active_times = course_schedule.count("1")
+        if active_times &gt; 1:
+            consistency_penalty += active_times - 1
+        elif active_times == 0:
+            consistency_penalty += 1
+
+    return -(overlap_penalty + consistency_penalty)
+
+def single_crossover(p1, p2):
+    point = random.randint(1, len(p1) - 1)
+    c1 = p1[:point] + p2[point:]
+    c2 = p2[:point] + p1[point:]
+    return c1, c2
+
+def mutate(chrom):
+    point = random.randint(0, len(chrom) - 1)
+    new_bit = "0" if chrom[point] == "1" else "1"
+    return chrom[:point] + new_bit + chrom[point + 1:]
+
+def two_point_crossover(p1, p2):
+    p1_index = random.randint(1, len(p1) - 2)
+    p2_index = random.randint(p1_index + 1, len(p1) - 1)
+
+    c1 = p1[:p1_index] + p2[p1_index:p2_index] + p1[p2_index:]
+    c2 = p2[:p1_index] + p1[p1_index:p2_index] + p2[p2_index:]
+    return c1, c2
+
+def genetic_algo(courses, slots, pop_size=10, max_iter=1000):
+    chrom_length = courses * slots
+    population = create_population(pop_size, chrom_length)
+
+    for _ in range(max_iter):
+        p1, p2 = random.sample(population, 2)
+        c1, c2 = single_crossover(p1, p2)
+        c1 = mutate(c1)
+        c2 = mutate(c2)
+
+        if calc_fitness(c1, courses, slots) == 0:
+            return c1, calc_fitness(c1, courses, slots)
+        if calc_fitness(c2, courses, slots) == 0:
+            return c2, calc_fitness(c2, courses, slots)
+
+        population.extend([c1, c2])
+        population = sorted(population, key=lambda x: calc_fitness(x, courses, slots))[:pop_size]
+
+    best_chrom = max(population, key=lambda x: calc_fitness(x, courses, slots))
+<a name="1"></a><font color="#00FF00"><a href="match224-1.html#1" target="1"><img align="left" alt="other" border="0" src="http://moss.stanford.edu/bitmaps/tm_1_6.gif"/></a>
+
+    return best_chrom, calc_fitness(best_chrom, courses, slots)
+
+def output():
+    courses = int(input("Enter number of courses (N): "))
+    slots = int(input("Enter number of time slots (T): "))
+    course_codes = []
+
+    for _ in range(courses):
+        code = input("Enter course code: ")
+        course_codes.append(code)
+</font>
+    print("Optimized Schedule:")
+    result, fitness = genetic_algo(courses, slots)
+    print(f"Schedule: {result}")
+    print(f"Fitness: {fitness}")
+
+    print("\nTwo-Point Crossover Example:")
+    pop = create_population(2, courses * slots)
+    print(f"Parent 1: {pop[0]}")
+    print(f"Parent 2: {pop[1]}")
+    c1, c2 = two_point_crossover(pop[0], pop[1])
+    print(f"Offspring 1: {c1}")
+    print(f"Offspring 2: {c2}")
+
+output()
+</pre>
+</body>
+</html>
